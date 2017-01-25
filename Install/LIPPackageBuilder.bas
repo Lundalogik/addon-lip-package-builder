@@ -214,14 +214,14 @@ On Error GoTo ErrorHandler
         bResult = True
     End If
     
-    'LJE This is not yet implemented
-    'If bResult Then
-    '    bResult = CleanupPackageFile(oPackage)
-    'End If
-    'If bResult = False Then
-    '    Call Application.MessageBox("Couldn't cleanup the package file, aborting...", vbError)
-    '    bResult = False
-    'End If
+     'Remove unsupported attributes on fields
+    If bResult Then
+        bResult = CleanupPackageFile(oPackage)
+    End If
+    If bResult = False Then
+        Call Application.MessageBox("Couldn't cleanup the package file, will continue anyway...", vbError)
+        bResult = True
+    End If
     
     'Save Package.json
     If bResult Then
@@ -1089,7 +1089,12 @@ On Error GoTo ErrorHandler
                 If oTable.Exists("fields") Then
                     For Each oField In oTable.Item("fields")
                         If oField.Exists("attributes") Then
-                            Call oField.Item("attributes").Remove("relatedtable")
+                            If oField.Item("attributes").Exists("relatedtable") Then
+                                Call oField.Item("attributes").Remove("relatedtable")
+                            End If
+                            If oField.Item("attributes").Exists("idrelation") Then
+                                Call oField.Item("attributes").Remove("idrelation")
+                            End If
                         End If
                     Next
                 End If
@@ -1101,3 +1106,4 @@ Exit Function
 ErrorHandler:
     CleanupPackageFile = False
 End Function
+
