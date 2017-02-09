@@ -32,8 +32,13 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
 
         vm.selectTables.subscribe(function(newValue){
-            ko.utils.arrayForEach(vm.filteredTables(),function(item){
-                item.select();
+            ko.utils.arrayForEach(vm.filteredTables(),function(table){
+                ko.utils.arrayForEach(table.guiFields(),function(field){ 
+                    if (field.selected() != newValue){
+                        field.selected(newValue);
+                    }
+                });
+            table.indeterminate(table.getIndeterminate());
             });
         });        
         
@@ -558,7 +563,6 @@ ko.bindingHandlers.indeterminateOrChecked = {
       if(valueAccessor == indeterminateStatus.NotSelected){
           $(element).prop('indeterminate',false);
           $(element).prop('checked', false);
-          // alert("unselected")
       }
       // Indeterminate
       else if(valueAccessor == indeterminateStatus.PartiallySelected){
