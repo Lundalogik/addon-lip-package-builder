@@ -1106,9 +1106,9 @@ Public Function CheckVersion() As String
 Dim oPackage As Object
 Dim strPackageJson As String
 Dim currentVersion As Object
-Dim highestVersion As Double
+Dim highestVersion As String
 
-highestVersion = 0#
+highestVersion = "0.0.0"
 strPackageJson = ReadAllTextFromFile(Application.WebFolder + "apps\LIPPackageBuilder\app.json")
 
 Set oPackage = JsonConverter.ParseJson(strPackageJson)
@@ -1116,12 +1116,12 @@ Set oPackage = JsonConverter.ParseJson(strPackageJson)
 For Each currentVersion In oPackage.Item("versions")
 
     If currentVersion.Item("version") > highestVersion Then
-        highestVersion = VBA.CDec(VBA.Replace(currentVersion.Item("version"), ".", ","))
+        highestVersion = currentVersion.Item("version")
     End If
 
 Next currentVersion
 
-CheckVersion = VBA.Replace(VBA.CStr(highestVersion), ",", ".")
+CheckVersion = highestVersion
 
 Exit Function
 ErrorHandler:
