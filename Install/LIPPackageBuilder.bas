@@ -51,7 +51,7 @@ On Error GoTo ErrorHandler
         'Only include modules, class modules and forms
         If oComp.Type <> 11 And oComp.Type <> 100 Then
             strComponents = strComponents & "{"
-            strComponents = strComponents & """name"": """ & oComp.name & ""","
+            strComponents = strComponents & """name"": """ & oComp.Name & ""","
             strComponents = strComponents & """type"": """ & GetModuleTypeName(oComp.Type) & """},"
         End If
     Next
@@ -900,7 +900,7 @@ On Error GoTo ErrorHandler
     Dim strFilename As String
     
     If Not Component Is Nothing Then
-        strFilename = Component.name
+        strFilename = Component.Name
         Select Case Component.Type
             Case 1
                 strFilename = strFilename & ".bas"
@@ -1100,4 +1100,30 @@ On Error GoTo ErrorHandler
 Exit Function
 ErrorHandler:
     CleanupPackageFile = False
+End Function
+
+Public Function CheckVersion() As String
+Dim oPackage As Object
+Dim strPackageJson As String
+Dim currentVersion As Object
+Dim highestVersion As Double
+
+highestVersion = 0#
+strPackageJson = ReadAllTextFromFile(Application.WebFolder + "apps\LIPPackageBuilder\app.json")
+
+Set oPackage = JsonConverter.ParseJson(strPackageJson)
+
+For Each currentVersion In oPackage.Item("versions")
+
+    If currentVersion.Item("version") > highestVersion Then
+        highestVersion = VBA.CDec(VBA.Replace(currentVersion.Item("version"), ".", ","))
+    End If
+
+Next currentVersion
+
+CheckVersion = VBA.Replace(VBA.CStr(highestVersion), ",", ".")
+
+Exit Function
+ErrorHandler:
+    UI.ShowError ("LIPPackageBuilder.CheckVersion")
 End Function
