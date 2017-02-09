@@ -400,6 +400,7 @@ var VbaComponent = function(c){
         }
         else return "";
     }
+    self.inExistingPackage = ko.observable(false);
 }
 
 var Relation = function(idrelation, tablename, fieldname){
@@ -425,6 +426,7 @@ var SqlComponent = function(sql){
     var self = this;
     self.name = sql.name;
     self.selected = ko.observable(false);
+    self.inExistingPackage = ko.observable(false);
 }
 
 var TableIcon = function(icon){
@@ -463,4 +465,5 @@ var Localize = function(l){
     self.select = function(){
         vm.selectedLocale(vm.selectedLocale() === self ? null : self);
     };
+    self.inExistingPackage = ko.observable(false);
 }
