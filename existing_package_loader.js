@@ -6,10 +6,7 @@ initPackageLoader = function(viewModel){
 }
 
  parseExistingPackage = function(){
-            clearExistingItems(vm.localizations());
-            clearExistingItems(vm.vbaComponents());
-            clearExistingItems(vm.sql());
-            clearExistingItems(vm.tables());
+            
             
             try{
                 vm.author(vm.existingPackage.author)
@@ -26,12 +23,6 @@ initPackageLoader = function(viewModel){
             loadExistingLocalizations();
             
         }
-        
-clearExistingItems = function(collection){
-    ko.utils.arrayForeach(collection, function(item){
-       item.inExistingPackage(false); 
-    });
-}
 
 loadExistingTables = function(){
     try{
