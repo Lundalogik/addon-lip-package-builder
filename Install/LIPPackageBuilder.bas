@@ -800,7 +800,7 @@ On Error GoTo ErrorHandler
     'Delete all files and subfolders
     'Be sure that no file is open in the folder
     Dim FSO As Object
-
+    Dim oTempFolder As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
     
     If Right(strTempFolder, 1) = "\" Then
@@ -812,9 +812,15 @@ On Error GoTo ErrorHandler
         Exit Function
     End If
 
+    
     On Error Resume Next
     'Delete files
-    FSO.DeleteFile strTempFolder & "\*.*", True
+    Set oTempFolder = FSO.GetFolder(strTempFolder)
+    Dim oFileName As Object
+    For Each oFileName In oTempFolder.Files
+        oFileName.Delete True ' delete all files
+    Next
+    
     'Delete subfolders
     FSO.DeleteFolder strTempFolder & "\*.", True
     Call RmDir(strTempFolder)
