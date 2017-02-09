@@ -51,7 +51,7 @@ On Error GoTo ErrorHandler
         'Only include modules, class modules and forms
         If oComp.Type <> 11 And oComp.Type <> 100 Then
             strComponents = strComponents & "{"
-            strComponents = strComponents & """name"": """ & oComp.name & ""","
+            strComponents = strComponents & """name"": """ & oComp.Name & ""","
             strComponents = strComponents & """type"": """ & GetModuleTypeName(oComp.Type) & """},"
         End If
     Next
@@ -800,7 +800,7 @@ On Error GoTo ErrorHandler
     'Delete all files and subfolders
     'Be sure that no file is open in the folder
     Dim FSO As Object
-    Dim oTempFolder As Object
+
     Set FSO = CreateObject("Scripting.FileSystemObject")
     
     If Right(strTempFolder, 1) = "\" Then
@@ -812,15 +812,9 @@ On Error GoTo ErrorHandler
         Exit Function
     End If
 
-    
     On Error Resume Next
     'Delete files
-    Set oTempFolder = FSO.GetFolder(strTempFolder)
-    Dim oFileName As Object
-    For Each oFileName In oTempFolder.Files
-        oFileName.Delete True ' delete all files
-    Next
-    
+    FSO.DeleteFile strTempFolder & "\*.*", True
     'Delete subfolders
     FSO.DeleteFolder strTempFolder & "\*.", True
     Call RmDir(strTempFolder)
@@ -838,13 +832,13 @@ Public Function SavePackageFile(oPackage As Object, strTempPath As String) As Bo
 On Error GoTo ErrorHandler
     Dim bResult As Boolean
     Dim FSO As New FileSystemObject
-    Dim filePath As String
-    filePath = strTempPath & "\package.json"
+    Dim Filepath As String
+    Filepath = strTempPath & "\package.json"
     bResult = True
     'Set FSO = CreateObject("Scripting.FileSystemObject")
     
     Dim oFile As Object
-    Set oFile = FSO.CreateTextFile(filePath, True, False)
+    Set oFile = FSO.CreateTextFile(Filepath, True, False)
     'Convert to a string and save
     Call oFile.WriteLine(JsonConverter.ConvertToJson(oPackage))
     oFile.Close
@@ -900,7 +894,7 @@ On Error GoTo ErrorHandler
     Dim strFilename As String
     
     If Not Component Is Nothing Then
-        strFilename = Component.name
+        strFilename = Component.Name
         Select Case Component.Type
             Case 1
                 strFilename = strFilename & ".bas"
@@ -1100,4 +1094,30 @@ On Error GoTo ErrorHandler
 Exit Function
 ErrorHandler:
     CleanupPackageFile = False
+End Function
+
+Public Function CheckVersion() As String
+Dim oPackage As Object
+Dim strPackageJson As String
+Dim currentVersion As Object
+Dim highestVersion As Double
+
+highestVersion = 0#
+strPackageJson = ReadAllTextFromFile(Application.WebFolder + "apps\LIPPackageBuilder\app.json")
+
+Set oPackage = JsonConverter.ParseJson(strPackageJson)
+
+For Each currentVersion In oPackage.Item("versions")
+
+    If currentVersion.Item("version") > highestVersion Then
+        highestVersion = VBA.CDec(VBA.Replace(currentVersion.Item("version"), ".", ","))
+    End If
+
+Next currentVersion
+
+CheckVersion = VBA.Replace(VBA.CStr(highestVersion), ",", ".")
+
+Exit Function
+ErrorHandler:
+    UI.ShowError ("LIPPackageBuilder.CheckVersion")
 End Function
