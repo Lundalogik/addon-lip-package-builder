@@ -4,7 +4,7 @@ Option Explicit
 Private m_TemporaryFolder As String
 
 Public Sub OpenPackageBuilder()
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim oDialog As New Lime.Dialog
     Dim idpersons As String
     Dim oItem As Lime.ExplorerItem
@@ -12,21 +12,21 @@ Public Sub OpenPackageBuilder()
     oDialog.Property("url") = Application.WebFolder & "lbs.html?ap=apps/LIPPackageBuilder/packagebuilder&type=tab"
     oDialog.Property("height") = 900
     oDialog.Property("width") = 1600
-    oDialog.show
+    oDialog.Show
 
     Exit Sub
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("Globals.OpenPackageBuilder")
 End Sub
 
 Public Function LoadDataStructure(strProcedureName As String) As String
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim oProcedure As LDE.Procedure
     Dim sXml As String
     Set oProcedure = Database.Procedures.Lookup(strProcedureName, lkLookupProcedureByName)
     If Not oProcedure Is Nothing Then
-        oProcedure.Parameters("@@lang").InputValue = Database.Locale
-        oProcedure.Parameters("@@idcoworker").InputValue = ActiveUser.Record.ID
+        oProcedure.parameters("@@lang").InputValue = Database.Locale
+        oProcedure.parameters("@@idcoworker").InputValue = ActiveUser.record.ID
         Call oProcedure.Execute(False)
     Else
         Call Application.MessageBox("The procedure """ & strProcedureName & """ does not exist in the client metadata.")
@@ -38,20 +38,20 @@ On Error GoTo ErrorHandler
     'MsgBox sXml
     'MsgBox StrConv(DecodeBase64(sXml), vbUnicode)
 Exit Function
-ErrorHandler:
+errorhandler:
 Call UI.ShowError("LIPPackageBuilder.LoadDatastructure")
 End Function
 
 Public Function GetVBAComponents() As String
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim oComp As Object
     Dim strComponents As String
     strComponents = "["
     For Each oComp In Application.VBE.ActiveVBProject.VBComponents
         'Only include modules, class modules and forms
-        If oComp.Type <> 11 And oComp.Type <> 100 Then
+        If oComp.Type <> vbext_ct_ActiveXDesigner And oComp.Type <> vbext_ct_Document Then
             strComponents = strComponents & "{"
-            strComponents = strComponents & """name"": """ & oComp.name & ""","
+            strComponents = strComponents & """name"": """ & oComp.Name & ""","
             strComponents = strComponents & """type"": """ & GetModuleTypeName(oComp.Type) & """},"
         End If
     Next
@@ -61,12 +61,12 @@ On Error GoTo ErrorHandler
     
     GetVBAComponents = strComponents
 Exit Function
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.GetVBAComponents")
 End Function
 
 Private Function GetModuleTypeName(ModuleType As Long) As String
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim strModuleTypeName As String
     strModuleTypeName = ""
     Select Case ModuleType
@@ -81,7 +81,7 @@ On Error GoTo ErrorHandler
     End Select
     GetModuleTypeName = strModuleTypeName
 Exit Function
-ErrorHandler:
+errorhandler:
 Call UI.ShowError("LIPPackageBuilder.GetModuleTypeName")
 End Function
 
@@ -127,7 +127,7 @@ End Function
 
 
 Public Sub CreatePackage(strPackageJsonBase64 As String)
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim strTempFolder As String
     Dim oPackage As Object
     Dim bResult As Boolean
@@ -214,14 +214,14 @@ On Error GoTo ErrorHandler
         bResult = True
     End If
     
-    'LJE This is not yet implemented
-    'If bResult Then
-    '    bResult = CleanupPackageFile(oPackage)
-    'End If
-    'If bResult = False Then
-    '    Call Application.MessageBox("Couldn't cleanup the package file, aborting...", vbError)
-    '    bResult = False
-    'End If
+    'Remove unsupported attributes on fields
+    If bResult Then
+        bResult = CleanupPackageFile(oPackage)
+    End If
+    If bResult = False Then
+        Call Application.MessageBox("Couldn't cleanup the package file, will continue anyway...", vbError)
+        bResult = True
+    End If
     
     'Save Package.json
     If bResult Then
@@ -270,12 +270,12 @@ On Error GoTo ErrorHandler
     End If
     
 Exit Sub
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.CreatePackage")
 End Sub
 
 Private Function SaveOptionQueries(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim allOK As Boolean
     bResult = True
@@ -311,13 +311,13 @@ On Error GoTo ErrorHandler
     End If
     SaveOptionQueries = allOK
 Exit Function
-ErrorHandler:
+errorhandler:
     Debug.Print Err.Description
     SaveOptionQueries = False
 End Function
 
 Private Function SaveSqlOnUpdate(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim allOK As Boolean
     bResult = True
@@ -354,13 +354,13 @@ On Error GoTo ErrorHandler
     End If
     SaveSqlOnUpdate = allOK
 Exit Function
-ErrorHandler:
+errorhandler:
     Debug.Print Err.Description
     SaveSqlOnUpdate = False
 End Function
 
 Private Function SaveSqlForNew(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim allOK As Boolean
     bResult = True
@@ -396,13 +396,13 @@ On Error GoTo ErrorHandler
     End If
     SaveSqlForNew = allOK
 Exit Function
-ErrorHandler:
+errorhandler:
     Debug.Print Err.Description
     SaveSqlForNew = False
 End Function
 
 Private Function SaveSqlExpressions(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim allOK As Boolean
     bResult = True
@@ -438,13 +438,13 @@ On Error GoTo ErrorHandler
     End If
     SaveSqlExpressions = allOK
 Exit Function
-ErrorHandler:
+errorhandler:
     Debug.Print Err.Description
     SaveSqlExpressions = False
 End Function
 
 Private Function SaveSqlDescriptive(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim allOK As Boolean
     bResult = True
@@ -472,12 +472,12 @@ On Error GoTo ErrorHandler
     End If
     SaveSqlDescriptive = allOK
 Exit Function
-ErrorHandler:
+errorhandler:
     Debug.Print Err.Description
     SaveSqlDescriptive = False
 End Function
-Private Function SaveTextToDisk(strText As String, strFolderPath As String, strFilename As String)
-On Error GoTo ErrorHandler
+Private Function SaveTextToDisk(strText As String, strFolderPath As String, strFileName As String)
+On Error GoTo errorhandler
     Dim oStream
     
     Set oStream = CreateObject("ADODB.Stream")
@@ -486,7 +486,7 @@ On Error GoTo ErrorHandler
         Call VBA.MkDir(strFolderPath)
     End If
     
-    strFilename = strFolderPath & "\" & strFilename
+    strFileName = strFolderPath & "\" & strFileName
     
     If strText = "" Or strText = "''" Then
         Call Err.Raise(1, , "Empty text was supplied to the stream")
@@ -498,7 +498,7 @@ On Error GoTo ErrorHandler
     
     On Error GoTo StreamError
     Call oStream.WriteText(strText)
-    Call oStream.SaveToFile(strFilename, adSaveCreateNotExist)
+    Call oStream.SaveToFile(strFileName, adSaveCreateNotExist)
     
     Call oStream.Close
     
@@ -514,24 +514,24 @@ StreamError:
     
     SaveTextToDisk = False
     Exit Function
-ErrorHandler:
+errorhandler:
     Debug.Print "LIPPackageBuilder.SaveTextToDisk " & Err.Description
     SaveTextToDisk = False
 End Function
 
 
 
-Private Function SaveBinaryToDisk(strBinaryBase64Data As String, strFilename As String, strFolder As String) As Boolean
-On Error GoTo ErrorHandler
+Private Function SaveBinaryToDisk(strBinaryBase64Data As String, strFileName As String, strFolder As String) As Boolean
+On Error GoTo errorhandler
     Dim binaryData() As Byte
     
     binaryData = DecodeBase64(strBinaryBase64Data)
     Dim strFilePath As String
     
     If VBA.Right(strFolder, 1) = "\" Then
-        strFilePath = strFolder + strFilename
+        strFilePath = strFolder + strFileName
     Else
-        strFilePath = strFolder + "\" + strFilename
+        strFilePath = strFolder + "\" + strFileName
     End If
     
     If VBA.Len(VBA.Dir(strFolder, vbDirectory)) = 0 Then
@@ -558,12 +558,12 @@ StreamError:
     Set binaryStream = Nothing
     SaveBinaryToDisk = False
     Exit Function
-ErrorHandler:
+errorhandler:
     SaveBinaryToDisk = False
 End Function
 
 Private Function SaveTableIcons(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim bAllOK As Boolean
     bResult = True
@@ -587,12 +587,12 @@ On Error GoTo ErrorHandler
     End If
     SaveTableIcons = bAllOK
 Exit Function
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.SaveTableIcons")
 End Function
 
 Private Function ExportSql(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     If Not oPackage.Item("install") Is Nothing Then
         Dim oProcedure As Object
@@ -613,22 +613,22 @@ On Error GoTo ErrorHandler
     
     ExportSql = True
 Exit Function
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.ExportSql")
 End Function
 
 Private Function ExportSqlObject(ProcedureName As String, Definition As String, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
 
     Dim strSqlFolder As String
     Dim strDefinition As String
-    Dim strFilename As String
+    Dim strFileName As String
     strSqlFolder = strTempFolder & "\" & "sql"
     If VBA.Len(Dir(strSqlFolder, vbDirectory)) = 0 Then
         MkDir strSqlFolder
     End If
     
-    strFilename = strSqlFolder & "\" & ProcedureName & ".sql"
+    strFileName = strSqlFolder & "\" & ProcedureName & ".sql"
     
     strDefinition = StrConv(DecodeBase64(Definition), vbUnicode)
     
@@ -640,14 +640,14 @@ On Error GoTo ErrorHandler
     intFileNum = FreeFile
     ' change Output to Append if you want to add to an existing file
     ' rather than creating a new file each time
-    Open strFilename For Output As intFileNum
+    Open strFileName For Output As intFileNum
     Print #intFileNum, strDefinition
     Close intFileNum
     
     ExportSqlObject = True
 
 Exit Function
-ErrorHandler:
+errorhandler:
     ExportSqlObject = False
 End Function
 Public Function ByteArrayToString(bytArray() As Byte) As String
@@ -662,26 +662,26 @@ Public Function ByteArrayToString(bytArray() As Byte) As String
  
  End Function
 Public Function GetFolder() As String
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim fldr As New LCO.FolderDialog
     Dim sItem As String
     
     GetFolder = ""
         
     fldr.text = "Select a Folder to save the package file."
-    If fldr.show = vbOK Then
+    If fldr.Show = vbOK Then
         GetFolder = fldr.Folder
     End If
     Set fldr = Nothing
     Exit Function
     
-ErrorHandler:
+errorhandler:
     GetFolder = ""
     Set fldr = Nothing
 End Function
 
 Private Function ZipTemporaryFolder(strPackageName As String, strTempFolder As String, ByRef ZipPath As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim FileNameZip, FolderName
     Dim strDate As String, DefPath As String
     Dim oApp As Object
@@ -723,8 +723,8 @@ On Error GoTo ErrorHandler
         
             'Keep script waiting until Compressing is done
             On Error Resume Next
-            Do Until oZipFile.Items.Count = _
-               oPackageFolder.Items.Count
+            Do Until oZipFile.Items.count = _
+               oPackageFolder.Items.count
                 Application.Wait (Now + TimeValue("0:00:01"))
             Loop
             On Error GoTo 0
@@ -738,13 +738,13 @@ On Error GoTo ErrorHandler
     End If
     ZipTemporaryFolder = bResult
 Exit Function
-ErrorHandler:
+errorhandler:
     ZipTemporaryFolder = False
     
 End Function
 
 Private Function RenameTemporaryFolder(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     bResult = True
     'I am assuming that the Folder Exists
@@ -778,7 +778,7 @@ On Error GoTo ErrorHandler
 
     RenameTemporaryFolder = bResult
 Exit Function
-ErrorHandler:
+errorhandler:
     bResult = False
 End Function
 
@@ -795,12 +795,12 @@ Sub NewZip(sPath)
 End Sub
 
 Public Function DeleteTemporaryFolder(strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
 
     'Delete all files and subfolders
     'Be sure that no file is open in the folder
     Dim FSO As Object
-
+    Dim oTempFolder As Object
     Set FSO = CreateObject("Scripting.FileSystemObject")
     
     If Right(strTempFolder, 1) = "\" Then
@@ -812,9 +812,15 @@ On Error GoTo ErrorHandler
         Exit Function
     End If
 
+    
     On Error Resume Next
     'Delete files
-    FSO.DeleteFile strTempFolder & "\*.*", True
+    Set oTempFolder = FSO.GetFolder(strTempFolder)
+    Dim oFileName As Object
+    For Each oFileName In oTempFolder.Files
+        oFileName.Delete True ' delete all files
+    Next
+    
     'Delete subfolders
     FSO.DeleteFolder strTempFolder & "\*.", True
     Call RmDir(strTempFolder)
@@ -823,13 +829,13 @@ On Error GoTo ErrorHandler
     DeleteTemporaryFolder = True
     
     Exit Function
-ErrorHandler:
+errorhandler:
     DeleteTemporaryFolder = False
     Debug.Print Err.Number & vbCrLf & Err.Description
 End Function
 
 Public Function SavePackageFile(oPackage As Object, strTempPath As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     Dim FSO As New FileSystemObject
     Dim filePath As String
@@ -848,14 +854,14 @@ On Error GoTo ErrorHandler
     
     SavePackageFile = bResult
 Exit Function
-ErrorHandler:
+errorhandler:
     bResult = False
 End Function
 
 
 'Exports all VBA-Modules marked in the Package JSON
 Public Function ExportVBA(oPackage As Object, strTempFolder As String) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim bResult As Boolean
     bResult = True
     If Not oPackage.Item("install") Is Nothing Then
@@ -873,13 +879,13 @@ On Error GoTo ErrorHandler
     End If
     ExportVBA = bResult
 Exit Function
-ErrorHandler:
+errorhandler:
     bResult = False
 End Function
 
 'Exporterar alla VBA-objekt till fil
 Public Function ExportVBAModule(ModuleName As String, Optional strTempFolder As String = "") As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim Component As Object
     Dim strInstallFolder As String
     
@@ -891,35 +897,35 @@ On Error GoTo ErrorHandler
     Else
         strInstallFolder = strTempFolder & "\" & "Install"
     End If
-    Dim strFilename As String
+    Dim strFileName As String
     
     If Not Component Is Nothing Then
-        strFilename = Component.name
+        strFileName = Component.Name
         Select Case Component.Type
             Case 1
-                strFilename = strFilename & ".bas"
+                strFileName = strFileName & ".bas"
             Case 2
-                strFilename = strFilename & ".cls"
+                strFileName = strFileName & ".cls"
             Case 3
-                strFilename = strFilename & ".frm"
+                strFileName = strFileName & ".frm"
             
             Case Else
                 bResult = False
                 Exit Function
         End Select
         
-        Call Component.Export(strInstallFolder & "\" & strFilename)
+        Call Component.Export(strInstallFolder & "\" & strFileName)
         bResult = True
     End If
     ExportVBAModule = bResult
 Exit Function
-ErrorHandler:
+errorhandler:
     bResult = False
 End Function
 
 Private Function CreateTemporaryFolder(Optional strTempFolder As String = "", Optional Subfolder As String = "") As String
-On Error GoTo ErrorHandler
-    'Kolla om sökvägen finns och skapar mappen
+On Error GoTo errorhandler
+    'Kolla om sÃ¶kvÃ¤gen finns och skapar mappen
     Dim strTempPath As String
     
     strTempPath = IIf(strTempFolder = "", Application.WebFolder & "apps\LIPPackageBuilder\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", ""), strTempFolder)
@@ -941,12 +947,12 @@ On Error GoTo ErrorHandler
     CreateTemporaryFolder = strTempPath
     
 Exit Function
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.CreateTemporaryFolder")
 End Function
 
 Public Function GetLocalizations(ByVal sOwner As String) As Records
-    On Error GoTo ErrorHandler
+    On Error GoTo errorhandler
     Dim oRecords As New LDE.Records
     Dim oFilter As New LDE.Filter
     Dim oView As New LDE.View
@@ -964,63 +970,63 @@ Public Function GetLocalizations(ByVal sOwner As String) As Records
     Call oRecords.Open(Database.Classes("localize"), oFilter, oView)
     Set GetLocalizations = oRecords
     Exit Function
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.GetLocalizations")
 End Function
-'LJE This is not yet implemented
-'Public Function OpenExistingPackage() As String
-'On Error GoTo ErrorHandler
-'    Dim o As New LCO.FileOpenDialog
-'    Dim strFilePath As String
-'    o.AllowMultiSelect = False
-'    o.Caption = "Select Package file"
-'    o.Filter = "Zipped Package files (*.zip) | *.zip"
-'
-'    o.DefaultFolder = LCO.GetDesktopPath
-'    If o.show = vbOK Then
-'        strFilePath = o.Filename
-'    Else
-'        Exit Function
-'    End If
-'
-'    If LCO.ExtractFileExtension(strFilePath) = "zip" Then
-'        Dim strTempFolderPath As String
-'        strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
-'        Dim FSO As New Scripting.FileSystemObject
-'        If Not FSO.FolderExists(strTempFolderPath) Then
-'            Call FSO.CreateFolder(strTempFolderPath)
-'        End If
-'
-'
-'        On Error GoTo UnzipError
-'        Call UnZip(strTempFolderPath, strFilePath)
-'
-'        On Error GoTo ErrorHandler
-'        Dim strJson As String
-'        If LCO.FileExists(strTempFolderPath & "\" & "app.json") Then
-'            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "app.json")
-'        ElseIf LCO.FileExists(strTempFolderPath & "\" & "package.json") Then
-'            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "package.json")
-'        Else
-'            Call Application.MessageBox("Could not find an app.json or a package.json in the extracted folder")
-'            Exit Function
-'        End If
-'
-'        Dim b64Json As String
-'        b64Json = XMLEncodeBase64(strJson)
-'
-'        OpenExistingPackage = b64Json
-'
-'    End If
-'
-'
-'Exit Function
-'ErrorHandler:
-'    Call UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
-'    Exit Function
-'UnzipError:
-'    Call Application.MessageBox("There was an error unzipping the zipped package file")
-'End Function
+
+Public Function OpenExistingPackage() As String
+On Error GoTo errorhandler
+    Dim o As New LCO.FileOpenDialog
+    Dim strFilePath As String
+    o.AllowMultiSelect = False
+    o.Caption = "Select Package file"
+    o.Filter = "Zipped Package files (*.zip) | *.zip"
+    
+    o.DefaultFolder = LCO.GetDesktopPath
+    If o.Show = vbOK Then
+        strFilePath = o.FileName
+    Else
+        Exit Function
+    End If
+    
+    If LCO.ExtractFileExtension(strFilePath) = "zip" Then
+        Dim strTempFolderPath As String
+        strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
+        Dim FSO As New Scripting.FileSystemObject
+        If Not FSO.FolderExists(strTempFolderPath) Then
+            Call FSO.CreateFolder(strTempFolderPath)
+        End If
+        
+        
+        On Error GoTo UnzipError
+        Call UnZip(strTempFolderPath, strFilePath)
+        
+        On Error GoTo errorhandler
+        Dim strJson As String
+        If LCO.FileExists(strTempFolderPath & "\" & "app.json") Then
+            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "app.json")
+        ElseIf LCO.FileExists(strTempFolderPath & "\" & "package.json") Then
+            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "package.json")
+        Else
+            Call Application.MessageBox("Could not find an app.json or a package.json in the extracted folder")
+            Exit Function
+        End If
+        
+        Dim b64Json As String
+        b64Json = XMLEncodeBase64(strJson)
+        
+        OpenExistingPackage = b64Json
+        
+    End If
+    
+    
+Exit Function
+errorhandler:
+    Call UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
+    Exit Function
+UnzipError:
+    Call Application.MessageBox("There was an error unzipping the zipped package file")
+End Function
 
 
 Sub UnZip(strTargetPath As String, Fname As Variant)
@@ -1049,7 +1055,7 @@ Sub UnZip(strTargetPath As String, Fname As Variant)
 End Sub
 
 Private Function ReadAllTextFromFile(strFilePath As String) As String
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     Dim strText As String, Filenum As Integer, s As String
     
     Filenum = FreeFile
@@ -1066,12 +1072,12 @@ On Error GoTo ErrorHandler
     
     ReadAllTextFromFile = strText
 Exit Function
-ErrorHandler:
+errorhandler:
     Call UI.ShowError("LIPPackageBuilder.ReadAllTextFromFile")
 End Function
 
 Private Function CleanupPackageFile(oPackage As Object) As Boolean
-On Error GoTo ErrorHandler
+On Error GoTo errorhandler
     'Remove related table
      If oPackage.Exists("install") Then
         If oPackage("install").Exists("tables") Then
@@ -1083,7 +1089,12 @@ On Error GoTo ErrorHandler
                 If oTable.Exists("fields") Then
                     For Each oField In oTable.Item("fields")
                         If oField.Exists("attributes") Then
-                            Call oField.Item("attributes").Remove("relatedtable")
+                            If oField.Item("attributes").Exists("relatedtable") Then
+                                Call oField.Item("attributes").Remove("relatedtable")
+                            End If
+                            If oField.Item("attributes").Exists("idrelation") Then
+                                Call oField.Item("attributes").Remove("idrelation")
+                            End If
                         End If
                     Next
                 End If
@@ -1092,6 +1103,6 @@ On Error GoTo ErrorHandler
     End If
     CleanupPackageFile = True
 Exit Function
-ErrorHandler:
+errorhandler:
     CleanupPackageFile = False
 End Function
