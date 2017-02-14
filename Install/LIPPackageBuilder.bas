@@ -901,6 +901,7 @@ On Error GoTo errorhandler
     
     If Not Component Is Nothing Then
         strFileName = Component.Name
+
         Select Case Component.Type
             Case 1
                 strFileName = strFileName & ".bas"
@@ -1105,4 +1106,32 @@ On Error GoTo errorhandler
 Exit Function
 errorhandler:
     CleanupPackageFile = False
+End Function
+
+Public Function CheckVersion() As String
+Dim oPackage As Object
+Dim strPackageJson As String
+Dim currentDate As Object
+Dim highestDate As Date
+Dim updatedVersion As String
+
+highestDate = "2000-01-01"
+strPackageJson = ReadAllTextFromFile(Application.WebFolder + "apps\LIPPackageBuilder\app.json")
+
+Set oPackage = JsonConverter.ParseJson(strPackageJson)
+
+For Each currentDate In oPackage.Item("versions")
+
+    If VBA.CDate(currentDate.Item("date")) > highestDate Then
+        highestDate = VBA.CDate(currentDate.Item("date"))
+        updatedVersion = currentDate.Item("version")
+    End If
+
+Next currentDate
+
+CheckVersion = updatedVersion
+
+Exit Function
+ErrorHandler:
+    UI.ShowError ("LIPPackageBuilder.CheckVersion")
 End Function

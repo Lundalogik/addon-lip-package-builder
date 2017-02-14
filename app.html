@@ -18,11 +18,14 @@
 <div class="container-fluid" data-bind="visible:activeTab() =='details'"><ul class="nav navbar-nav"><li role="presentation" class="details-submenu"><a href="#" data-bind="icon:'fa-folder-open-o',tooltip:{text:'Open existing package'}, click:openExistingPackage">Open existing package</a></li></ul></div>
 </nav>
 <div class="package-container row col-md-12">
+
+  <div class ="version-no pull-right" data-bind="text: 'Version: ' + appversion()"></div>
 	<div class="row col-md-10 col-md-offset-1 details-tab" data-bind="visible: activeTab() == 'details'">
 		<div class="row">
             <!--button class="row col-md-1" type="button" id="open-existing-package-button" class="btn btn-default" data-bind="click: openExistingPackage, icon: 'fa-folder-open-o fa-2x', "> </button-->
             <!--button class="row col-md-1 col-md-offset-1" type="button" id="download-appstore-package-button" class="btn btn-default" data-bind="click: downloadExistingPackage, icon: 'fa-cloud-download fa-2x', tooltip:{text:'Download package from appstore'}"> </button-->
         </div>
+
         <form >
 		  	<div class="form-group col-md-4">
 		    	<label for="inputName">Name</label>
@@ -35,7 +38,7 @@
 		  	<div class="form-group col-md-4">
 				<label for="sel1">Status</label>
 				<select class="form-control" id="statusInput" data-bind="options: statusOptions, optionsValue: 'text',value: status">
-					
+
 				</select>
 			</div>
 			<div class="form-group col-md-12">
@@ -50,9 +53,9 @@
 	    		<label for="inputComment">Version comment</label>
 		    	<input type="text" class="form-control" id="inputVersion" placeholder="Comment" data-bind="value: comment, valueUpdate: 'afterkeydown'">
 		  	</div>
-		  	
+
 		</form>
-        
+
 	</div>
 	<div class="row col-md-12 col-md-offset-1" data-bind="visible: activeTab() == 'database'">
 		<div class="row">
@@ -78,7 +81,7 @@
 						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
 							<input class="select-all" type="checkbox" data-bind="checked: selectTables, popover: 'Select all'" >
 						</span>
-                        
+
 				  		<span class="col-md-4 list-header" data-bind="text: 'Name'"/>
 				  		<span class="col-md-4 list-header" data-bind="text: 'Localname'"/>
 				  		<span class="col-md-2 list-header" data-bind="text: 'Timestamp'"/>
@@ -89,12 +92,12 @@
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="stopBubble: true, indeterminateOrChecked:indeterminate, click:select" >
 						</span>
-                        
+
 						<span class="col-md-4" data-bind="text: name"/>
 						<span class="col-md-4" data-bind="text: localname"/>
 						<span class="col-md-2" data-bind="text: timestamp()"/>
                         <span class="col-md-1" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage" > </span>
-                        
+
 					</a>
 					<!-- /ko -->
 				</div>
@@ -116,22 +119,24 @@
 				  		<span class="col-md-2 list-header" data-bind="text: 'Field type'"/>
                         <span class="col-md-3 list-header" data-bind="text: 'Localname'"/>
 				  		<span class="col-md-2 list-header" data-bind="text: 'Timestamp'"/>
-                        <span class="col-md-1 list-header" >&nbsp;</span>
+
+              <span class="col-md-1 list-header" >&nbsp;</span>
                         
+
 				  	</div>
 					<!-- ko foreach: shownTable().filteredFields() -->
 					<a class="list-group-item" data-bind="click: select, tooltip:{ text:tooltipAttributes(), placement: ($index() > 5) ? 'top' : 'bottom'}" data-html="true" >
-					
+
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="checked: selected, stopBubble: true" >
 						</span>
-                        
+
 						<div class="col-md-3 hideOverflow"><span class="hideOverflow" data-bind="text: name"/></div>
                         <strong class="col-md-2 hideOverflow" data-bind="text: fieldTypeDisplayName" />
 						<span class="col-md-3 hideOverflow" data-bind="text: localname"/>
 						<span class="col-md-2" data-bind="text: timestamp()"/>
                         <span class="col-md-1" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
-                        
+
 					</a>
 					<!-- /ko -->
 				</div>
@@ -139,7 +144,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'vba'">
 		<h4>VBA</h4>
 		<!-- ko if: showComponents() -->
@@ -169,8 +174,9 @@
 
 						<span class="col-md-4" data-bind="text: name"/>
 						<span class="col-md-5" data-bind="text: type"/>
+
                         <span class="col-md-1" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
-						
+
 					</a>
 					<!-- /ko -->
 				</div>
@@ -209,7 +215,7 @@
 						<span class="col-md-5" data-bind="text: name"/>
                         <span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
 						<!--span class="col-md-5" data-bind="text: type"/-->
-						
+
 					</a>
 					<!-- /ko -->
 				</div>
@@ -247,8 +253,10 @@
 						</span>
 
 						<span class="col-md-4" data-bind="text: owner"/>
+
 						<span class="col-md-4" data-bind="text: code"/>
 						<span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
+
 					</a>
 					<!-- /ko -->
 				</div>
