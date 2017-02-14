@@ -10,7 +10,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             this.yourPropertyDefinedWhenTheAppIsUsed = appConfig.yourProperty;
             this.dataSources = [];
             this.resources = {
-                scripts: ['model.js', 'enums.js', 'packagebuilder.js'], // <= External libs for your apps. Must be a file
+                scripts: ['model.js', 'enums.js', 'packagebuilder.js', 'existing_package_loader.js'], // <= External libs for your apps. Must be a file
                 styles: ['app.css'], // <= Load styling for the app.
                 libs: ['json2xml.js'] // <= Allready included libs, put not loaded per default. Example json2xml.js
             };
@@ -35,12 +35,14 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.selectTables.subscribe(function(newValue){
             ko.utils.arrayForEach(vm.filteredTables(),function(table){
-                 ko.utils.arrayForEach(table.guiFields(),function(field){ 
-                     if (field.selected() != newValue){
-                         field.selected(newValue);
-                     }
-                 });
-             table.indeterminate(table.getIndeterminate());
+
+                ko.utils.arrayForEach(table.guiFields(),function(field){ 
+                    if (field.selected() != newValue){
+                        field.selected(newValue);
+                    }
+                });
+            table.indeterminate(table.getIndeterminate());
+
             });
         });
 
@@ -148,64 +150,20 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.existingPackage = null;
 
-        function clearExistingPackage(){
-            $.each(vm.tables(),function(index,table){
-                $.each(table.guiFields(), function(index,field){
-                    field.inExistingPackage(false);
-                });
-            });
-        }
+        
+      
         //Select all tables that exist in the opened package
-        function parseExistingPackage(){
-            try{
-                vm.author(vm.existingPackage.author)
-                vm.comment(vm.existingPackage.comment);
-                vm.description(vm.existingPackage.description);
-                vm.versionNumber(vm.existingPackage.versionNumber);
-                vm.name(vm.existingPackage.name);
-                vm.status(vm.existingPackage.status);
-
-
-            }
-            catch(e){alert("Error parsing package: " + e);}
-            try{
-                var existingPackageTables = vm.existingPackage.install.tables;
-                //find all mutual tables
-                $.each(existingPackageTables, function(i,et){
-                   ko.utils.arrayForEach(vm.tables(), function(table){
-                       if(!table.guiFields()){
-                           alert(ko.toJSON(table));
-                       }
-                       else{
-                       ko.utils.arrayForEach(table.guiFields(),function(field){
-
-                           $.each(et.fields,function(l,ef){
-                               if(ef.name == field.name && et.name == table.name){
-                                   field.inExistingPackage(true);
-                                   field.selected(true);
-                                   table.inExistingPackage(true);
-                               }
-                           });
-                       });
-                       }
-                    //set selected or partially selected
-                    table.indeterminate(table.getIndeterminate());
-                   });
-
-                });
-            }
-            catch(e){alert("Error parsing package: " + e);}
-        }
-
-        vm.openExistingPackage = function(){
-
+        vm.openExistingPackage = function(){            
             try
             {
                 var b64Json = window.external.run('LIPPackageBuilder.OpenExistingPackage');
-                b64Json = b64Json.replace(/\r?\n|\r/g,"");
-                b64Json = b64_to_utf8(b64Json);
-
-                vm.existingPackage =  JSON.parse(b64Json);
+                if(b64Json != ""){
+                    b64Json = b64Json.replace(/\r?\n|\r/g,"");
+                    b64Json = b64_to_utf8(b64Json);
+                    
+                    
+                    vm.existingPackage =  JSON.parse(b64Json);
+                }
 
             }
             catch(e){alert("Error opening existing package:\n" + e);}
@@ -349,7 +307,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.sqlFilter = ko.observable("");
 
         function b64_to_utf8(str) {
-            return unescape(window.atob(str));
+            return window.atob(str);
         }
 
 
@@ -530,10 +488,18 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.filterSql();
         });
 
+        
+        vm.getLocalizations();
+        checkIfLocalizationsLoaded = true;
+        
+        vm.getVbaComponents();
+        checkIfVbaLoaded = true;
+
         // Set default filter
         vm.filterTables();
         vm.filterSql();
         vm.filterComponents();
+        
         vm.filterLocalizations();
         $(window).scroll(function(){
             $("#localeInfo").stop().animate({"marginTop": ($(window).scrollTop()) + "px", "marginLeft":($(window).scrollLeft()) + "px"}, "slow" );
@@ -575,7 +541,6 @@ ko.bindingHandlers.indeterminateOrChecked = {
       if(valueAccessor == indeterminateStatus.NotSelected){
           $(element).prop('indeterminate',false);
           $(element).prop('checked', false);
-          // alert("unselected")
       }
       // Indeterminate
       else if(valueAccessor == indeterminateStatus.PartiallySelected){
