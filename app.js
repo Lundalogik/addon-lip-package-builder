@@ -136,18 +136,9 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         
         vm.existingPackage = null;
         
-        function clearExistingPackage(){
-            $.each(vm.tables(),function(index,table){
-                $.each(table.guiFields(), function(index,field){
-                    field.inExistingPackage(false);
-                });
-            });
-        }
+      
         //Select all tables that exist in the opened package
-       
-        
-        vm.openExistingPackage = function(){
-            
+        vm.openExistingPackage = function(){            
             try
             {
                 var b64Json = window.external.run('LIPPackageBuilder.OpenExistingPackage');

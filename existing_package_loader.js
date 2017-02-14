@@ -6,8 +6,18 @@ initPackageLoader = function(viewModel){
 }
 
  parseExistingPackage = function(){
-            
-            
+            //Clear all selected and 'inExistingPackage' properties for all objects
+            try{
+                clearCollection(vm.vbaComponents(), "selected");
+                clearCollection(vm.sql(), "selected");
+                ko.utils.arrayForEach(vm.tables(), function(table){
+                    table.indeterminate(indeterminateStatus.NotSelected);
+                    clearCollection(table.guiFields(),"selected");
+                });
+                clearCollection(vm.localizations(),"checked");
+            }
+            catch(e){alert(e);}
+            // Set details in "details" screen
             try{
                 vm.author(vm.existingPackage.author)
                 vm.comment(vm.existingPackage.comment);
@@ -17,13 +27,33 @@ initPackageLoader = function(viewModel){
                 vm.status(vm.existingPackage.status);
             }
             catch(e){alert("Error parsing package: " + e);}
+            // Flag objects loaded from the package
             loadExistingTables();
             loadExistingVba();
             loadExistingSQL();
             loadExistingLocalizations();
             
+}
+/**
+ * Sets all items in a collection as unselected and not in an existing package
+ * based on the second parameter
+ * @param {Array} collection 
+ * @param {String} selectedProperty
+ */
+clearCollection = function(collection, selectedProperty){
+    
+    ko.utils.arrayForEach(collection, function(selectableObject){
+        selectableObject.inExistingPackage(false);
+        if(selectableObject.hasOwnProperty(selectedProperty) && ko.isObservable(selectableObject[selectedProperty])){
+            selectableObject[selectedProperty](false);
+            selectableObject.inExistingPackage(false);
         }
-
+    })
+}
+/**
+ * Flags the viewmodels tables collection as inExistingPackage and selected
+ * 
+ */        
 loadExistingTables = function(){
     try{
         var existingPackageTables = vm.existingPackage.install.tables;
@@ -55,7 +85,10 @@ loadExistingTables = function(){
     }
     catch(e){alert("Error loading tables from package: " + e);}
 }
-        
+/**
+ * Flags the viewmodels vbaComponents collection as inExistingPackage and selected
+ * 
+ */        
 loadExistingVba = function(){
     var existingPackageVba = vm.existingPackage.install.vba;
     if(!existingPackageVba){
@@ -75,7 +108,10 @@ loadExistingVba = function(){
     }
     catch(e){alert(e);}
 }
-
+/**
+ * Flags the viewmodels sql collection as inExistingPackage and selected
+ * 
+ */        
 loadExistingSQL = function(){
     var existingPackageSQL = vm.existingPackage.install.sql;
     if(!existingPackageSQL){
@@ -84,6 +120,7 @@ loadExistingSQL = function(){
     try{
         //Fetch sql from package
         ko.utils.arrayForEach(existingPackageSQL, function(eSql){
+            
             //Fetch sql named the same as in the existing package as in the current database, select it and mark as inExistingPackage
             ko.utils.arrayForEach(ko.utils.arrayFilter(vm.sql(),function (s){
                 return s.name == eSql.name;
@@ -95,7 +132,10 @@ loadExistingSQL = function(){
     }
     catch(e){alert(e);}
 }
-
+/**
+ * Flags the viewmodels localizations collection as inExistingPackage and selected
+ * 
+ */        
 loadExistingLocalizations = function(){
     var existingPackageLocalizations = vm.existingPackage.install.localize;
     
