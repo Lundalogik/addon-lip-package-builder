@@ -1,4 +1,4 @@
-Attribute VB_Name = "LIPPackageBuilder"
+﻿Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
 Private m_TemporaryFolder As String
@@ -49,7 +49,7 @@ On Error GoTo errorhandler
     strComponents = "["
     For Each oComp In Application.VBE.ActiveVBProject.VBComponents
         'Only include modules, class modules and forms
-        If oComp.Type <> vbext_ct_ActiveXDesigner And oComp.Type <> vbext_ct_Document Then
+        If oComp.Type <> 11 And oComp.Type <> 100 Then
             strComponents = strComponents & "{"
             strComponents = strComponents & """name"": """ & oComp.Name & ""","
             strComponents = strComponents & """type"": """ & GetModuleTypeName(oComp.Type) & """},"
