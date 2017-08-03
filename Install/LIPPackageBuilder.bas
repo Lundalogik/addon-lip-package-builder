@@ -214,7 +214,9 @@ On Error GoTo errorhandler
         bResult = True
     End If
     
+
     'Remove unsupported attributes on fields
+
     If bResult Then
         bResult = CleanupPackageFile(oPackage)
     End If
@@ -1135,3 +1137,4 @@ Exit Function
 ErrorHandler:
     UI.ShowError ("LIPPackageBuilder.CheckVersion")
 End Function
+
