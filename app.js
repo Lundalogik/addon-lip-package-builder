@@ -385,9 +385,11 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             localData = localData.replace(/\r?\n|\r/g,"");
             localData = b64_to_utf8(localData);
 
-            var json = xml2json($.parseXML(localData),'');
-            json = json.replace(/\\/g,"\\\\");
+            localData = localData.replace(/\\/g,"\\\\");
+            localData = localData.replace(/&quot;/g, "\\&quot;");
 
+            var json = xml2json($.parseXML(localData),'');
+            
             json = $.parseJSON(json);
             vm.localNames = json.data;
         }

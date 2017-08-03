@@ -453,11 +453,12 @@ var Localize = function(l){
     var self = this;
     self.owner = l.owner.text;
     self.code = l.code.text;
-    self.sv = l.sv.text;
-    self.en_us = l.en_us.text;
-    self.fi = l.fi.text;
-    self.no = l.no.text;
-    self.da = l.da.text;
+    self.context = l.context.text;
+    self.sv = l.sv ? l.sv.text : "";
+    self.en_us = l.en_us ? l.en_us.text : "";
+    self.fi = l.fi ? l.fi.text : "";
+    self.no = l.no ? l.no.text : "";
+    self.da = l.da ? l.da.text : "";
     self.checked = ko.observable(false);
     self.selected = ko.computed(function(){
         return vm.selectedLocale() === self;
