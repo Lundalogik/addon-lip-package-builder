@@ -214,6 +214,7 @@ On Error GoTo ErrorHandler
         bResult = True
     End If
     
+
     'LJE This is not yet implemented
     'If bResult Then
     '    bResult = CleanupPackageFile(oPackage)
@@ -222,6 +223,7 @@ On Error GoTo ErrorHandler
     '    Call Application.MessageBox("Couldn't cleanup the package file, aborting...", vbError)
     '    bResult = False
     'End If
+
     
     'Save Package.json
     If bResult Then
@@ -919,7 +921,7 @@ End Function
 
 Private Function CreateTemporaryFolder(Optional strTempFolder As String = "", Optional Subfolder As String = "") As String
 On Error GoTo ErrorHandler
-    'Kolla om sökvägen finns och skapar mappen
+    'Kolla om sï¿½kvï¿½gen finns och skapar mappen
     Dim strTempPath As String
     
     strTempPath = IIf(strTempFolder = "", Application.WebFolder & "apps\LIPPackageBuilder\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", ""), strTempFolder)
@@ -1096,3 +1098,4 @@ Exit Function
 ErrorHandler:
     CleanupPackageFile = False
 End Function
+
