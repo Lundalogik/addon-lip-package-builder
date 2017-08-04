@@ -42,7 +42,7 @@ You can create a package with the following objects from a LIME CRM Application:
 
 
 # How to use
-1. Open the package builder by running the sub LIPPackageBuilder.OpenPackageBuilder in LIME VBA.
+1. Open the package builder by running the sub LIPPackageBuilder.OpenPackageBuilder in LIME VBA (your user need to have a coworker card for it to work).
 2. Select the objects that are to be included in the package. See the section Package Information for more information about the limitations in the packagebuilder
 3. Make sure you have selected anything and given the package a name
 4. When "Create Package" button is clicked the package will be built as a zip-file and a windows explorer will be opened with the selected save destination path.
