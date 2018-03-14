@@ -12,17 +12,19 @@ packagebuilder = {
             var relations = {};
             var sqlObjects = [];
             var localizations = [];
-            if (vm.name() == ""){
+            if (vm.name() == "") {
                 alert("Package name is required");
                 return;
             }
-            try{
+            try {
                 // For each selected table
 
                 $.each(vm.selectedTables(),function(i,table){
                     var packageTable = {};
+                    
                     //Clone the table object
                     packageTable = jQuery.extend(true,{},table);
+
                     // Fetch local names from table with same name
                     var localNameTable  = vm.localNames.Tables.filter(function(t){
                         return t.name == table.name;
@@ -31,6 +33,7 @@ packagebuilder = {
                     // Set singular and plural local names for table
                     packageTable.localname_singular = localNameTable.localname_singular;
                     packageTable.localname_plural = localNameTable.localname_plural;
+
                     var icon = vm.tableIcons().filter(function(ti){
                        return ti.table == table.name;
                     })[0];
@@ -38,23 +41,29 @@ packagebuilder = {
                     if(icon != null){
                             packageTable.attributes.icon = icon.binarydata;
                     }
+                    
                     // For each selected field in current table
                     var fields = [];
                     var packageFields = [];
 
                     var selectedFields = jQuery.extend(true,{},table.selectedFields());
                     $.each(selectedFields,function(j,field){
+                        // First, make sure that it is an array to make the code work properly. If there is only one field in the table, it is a single object instead of the array it should be.
+                        if (!_.isArray(localNameTable.Fields)) {
+                            localNameTable.Fields = [localNameTable.Fields];
+                        }
                         // Fetch local names from field with same name from the other data source
                         var localNameField = localNameTable.Fields.filter(function(f){
                             return f.name == field.name;
                         })[0];
+                        
                         //Clone the field
                         var packageField = jQuery.extend(true,{},field);
 
                         // Set local names for current field
                         packageField.localname = jQuery.extend(true,{},localNameField);
 
-                        //create relations
+                        // Create relations
                         try{
                             if(field.attributes.fieldtype == "relation"){
                                 //Lookup if relation already added
@@ -188,7 +197,7 @@ packagebuilder = {
             try {
                 var arrComponents = [];
                 $.each(vm.selectedVbaComponents(), function(i, component){
-                    arrComponents.push({"name": component.name, "relPath": "Install\\" + component.name + component.extension() })
+                    arrComponents.push({"name": component.name, "relPath": "vba\\" + component.name + component.extension() })
                 });
 
 

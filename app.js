@@ -115,7 +115,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                     {type: 'records', source: 'LIPPackageBuilder.GetLocalizations, ' },
                     true
                 );
-
                 vm.localizations(ko.utils.arrayMap(xmlData.localize.records, function(l){
                     return new Localize(l);
                 }));
