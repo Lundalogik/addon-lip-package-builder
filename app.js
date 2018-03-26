@@ -19,7 +19,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
     //initialize
     self.initialize = function (node, vm) {
 
-        $('title').html('LIP Package builder');
+        $('title').html('LIP Package Builder');
 
         enums.initialize(vm);
         packagebuilder.initialize(vm);
@@ -77,7 +77,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.getVersion = function(){
           try{
-              vm.appversion(lbs.common.executeVba('LIPPackageBuilder.CheckVersion'));
+              vm.appversion(lbs.common.executeVba('LIPPackageBuilder.CheckVersion'));       //##TODO: This function does not exist in VBA!
             }
             catch(e){
               vm.appversion("N/A");
@@ -363,18 +363,20 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             alert(err)
         }
         // Data from details
-        vm.author = ko.observable("");
-        vm.comment = ko.observable("");
-        vm.description = ko.observable("");
+        vm.uniqueName = ko.observable("");
+        vm.displayName = ko.observable("");
+        vm.authors = ko.observable("");
         vm.versionNumber = ko.observable("");
-        vm.name = ko.observable("");
+        vm.versionComment = ko.observable("");
+        vm.description = ko.observable("");
+        
         // Set default status to development
-        vm.status = ko.observable("Development");
+        // vm.status = ko.observable("Development");
 
         // Set status options
-        vm.statusOptions = ko.observableArray([
-            new StatusOption('Development'), new StatusOption('Beta'), new StatusOption('Release')
-        ]);
+        // vm.statusOptions = ko.observableArray([
+        //     new StatusOption('Development'), new StatusOption('Beta'), new StatusOption('Release')
+        // ]);
 
         // Load localization data
         try{

@@ -27,34 +27,37 @@
             <!--button class="row col-md-1 col-md-offset-1" type="button" id="download-appstore-package-button" class="btn btn-default" data-bind="click: downloadExistingPackage, icon: 'fa-cloud-download fa-2x', tooltip:{text:'Download package from appstore'}"> </button-->
         </div>
 
-        <form >
+        <form>
 		  	<div class="form-group col-md-4">
-		    	<label for="inputName">Name</label>
-		    	<input type="text" class="form-control" id="inputName" placeholder="Name" data-bind="value: name, valueUpdate: 'afterkeydown'">
+		    	<label for="inputUniqueName">Name of Package / Add-on</label>
+		    	<input type="text" class="form-control" id="inputName" placeholder="Name" data-bind="value: uniqueName, valueUpdate: 'afterkeydown', hasFocus: true">
 		  	</div>
 		  	<div class="form-group col-md-4">
-		    	<label for="inputAuthor">Author</label>
-		    	<input type="text" class="form-control" id="inputAuthor" placeholder="Author" data-bind="value: author, valueUpdate: 'afterkeydown'">
+		    	<label for="inputDisplayName">Display Name of Add-on in Store</label>
+		    	<input type="text" class="form-control" id="inputName" placeholder="Display Name" data-bind="value: displayName, valueUpdate: 'afterkeydown'">
 		  	</div>
 		  	<div class="form-group col-md-4">
+		    	<label for="inputAuthors">Author(s)</label>
+		    	<input type="text" class="form-control" id="inputAuthors" placeholder="Author(s)" data-bind="value: authors, valueUpdate: 'afterkeydown'">
+		  	</div>
+		  	<!-- <div class="form-group col-md-4">
 				<label for="sel1">Status</label>
 				<select class="form-control" id="statusInput" data-bind="options: statusOptions, optionsValue: 'text',value: status">
 
 				</select>
-			</div>
+			</div> -->
 			<div class="form-group col-md-12">
-	    		<label for="inputComment">Description</label>
+	    		<label for="inputDescription">Description</label>
 		    	<textarea rows="3" type="text" class="form-control" id="inputDescription" placeholder="Description" data-bind="value: description, valueUpdate: 'afterkeydown'"></textarea>
 		  	</div>
 		  	<div class="form-group col-md-6">
-		    	<label for="inputVersion">Version number</label>
-		    	<input type="text" class="form-control" id="inputVersion" placeholder="Version number" data-bind="value: versionNumber, valueUpdate: 'afterkeydown'">
+		    	<label for="inputVersion">Version Number</label>
+		    	<input type="text" class="form-control" id="inputVersion" placeholder="x.y.z" data-bind="value: versionNumber, valueUpdate: 'afterkeydown'">
 		  	</div>
 	  		<div class="form-group col-md-6">
-	    		<label for="inputComment">Version comment</label>
-		    	<input type="text" class="form-control" id="inputVersion" placeholder="Comment" data-bind="value: comment, valueUpdate: 'afterkeydown'">
+	    		<label for="inputVersionComment">Version Comment</label>
+		    	<input type="text" class="form-control" id="inputVersionComment" placeholder="Version Comment" data-bind="value: versionComment, valueUpdate: 'afterkeydown'">
 		  	</div>
-
 		</form>
 
 	</div>
