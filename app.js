@@ -66,12 +66,21 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             });
         });
 
-        //Checkbox to select all Localizations and functions
+        //Checkbox to select all Localizations
         vm.selectAllLocalizations = ko.observable(false);
 
         vm.selectAllLocalizations.subscribe(function(newValue){
             ko.utils.arrayForEach(vm.filteredLocalizations(),function(l){
                 l.checked(newValue);
+            });
+        });
+
+        // Checkbox to select all Actionpads
+        vm.selectAllActionpads = ko.observable(false);
+
+        vm.selectAllActionpads.subscribe(function(newValue) {
+            ko.utils.arrayForEach(vm.filteredActionpads(),function(a) {
+                a.checked(newValue);
             });
         });
 
@@ -86,7 +95,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.getVersion();
 
-        vm.getVbaComponents = function(){
+        vm.getVbaComponents = function() {
             try{
                 var components = lbs.common.executeVba('LIPPackageBuilder.GetVBAComponents');
                 components = $.parseJSON(components);
@@ -105,9 +114,31 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.componentFilter("");
             vm.filteredComponents(vm.vbaComponents());
             vm.showComponents(true);
-        }
+        };
 
-        vm.getLocalizations = function(){
+        vm.getActionpads = function() {
+            try {
+                var actionpads = lbs.common.executeVba('LIPPackageBuilder.GetAvailableActionpads');
+                actionpads = $.parseJSON(actionpads);
+
+                vm.actionpads(ko.utils.arrayMap(actionpads, function(a) {
+                    return new Actionpad(a);
+                }));
+
+                vm.actionpads.sort(function(left, right) {
+                    return left.tableName === right.tableName ? 0 : (left.tableName < right.tableName ? -1 : 1);
+                });
+            }
+            catch (e) {
+                alert(e);
+            }
+
+            vm.actionpadsFilter("");
+            vm.filteredActionpads(vm.actionpads());
+            vm.showActionpads(true);
+        };
+
+        vm.getLocalizations = function() {
             try{
                 var xmlData = {};
                 lbs.loader.loadDataSource(
@@ -130,20 +161,28 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         var checkIfVbaLoaded = false;
         var checkIfLocalizationsLoaded = false;
+        var checkIfActionpadsLoaded = false;
         // Navbar function to change tab
-        vm.showTab = function(t){
-            try{
-                if (t == 'vba' && checkIfVbaLoaded == false){
+        vm.showTab = function(t) {
+            try {
+                if (t == 'vba' && !checkIfVbaLoaded){
                     vm.getVbaComponents();
                     checkIfVbaLoaded = true;
-                }else if (t == 'localize' && !checkIfLocalizationsLoaded){
+                }
+                else if (t == 'localize' && !checkIfLocalizationsLoaded){
                     vm.getLocalizations();
                     checkIfLocalizationsLoaded = true;
+                }
+                else if (t == 'actionpads' && !checkIfActionpadsLoaded){
+                    vm.getActionpads();
+                    checkIfActionpadsLoaded = true;
                 }
 
                 vm.activeTab(t);
             }
-                catch(e){alert(e);}
+            catch(e) {
+                alert(e);
+            }
 
         };
 
@@ -201,6 +240,9 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.localizations = ko.observableArray();
         vm.showLocalizations = ko.observable();
 
+        vm.actionpads = ko.observableArray();
+        vm.showActionpads = ko.observable();
+
         vm.filterComponents = function(){
             if(vm.componentFilter() != ""){
 
@@ -222,8 +264,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.filterLocalizations = function(){
             if(vm.localizationFilter() != ""){
-
-
                 // Filter on the three visible columns (name, localname, timestamp)
                 vm.filteredLocalizations(ko.utils.arrayFilter(vm.localizations(), function(item) {
                     if(item.owner.toLowerCase().indexOf(vm.localizationFilter().toLowerCase()) != -1){
@@ -254,8 +294,23 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             }
         }
 
-         vm.filterSql = function(){
-            if(vm.sqlFilter() != ""){
+        vm.filterActionpads = function() {
+            if(vm.actionpadsFilter() !== "") {
+                // Filter on the table name only
+                vm.filteredActionpads(ko.utils.arrayFilter(vm.actionpads(), function(item) {
+                    if(item.tableName.toLowerCase().indexOf(vm.actionpadsFilter().toLowerCase()) !== -1) {
+                        return true;
+                    }
+                    return false;
+                }));
+            }
+            else {
+                vm.filteredActionpads(vm.actionpads().slice());
+            }
+        }
+
+        vm.filterSql = function() {
+            if(vm.sqlFilter() != "") {
                 vm.filteredSql.removeAll();
 
                 // Filter on the three visible columns (name, localname, timestamp)
@@ -303,6 +358,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.fieldFilter = ko.observable("");
         vm.componentFilter = ko.observable("");
         vm.localizationFilter = ko.observable("");
+        vm.actionpadsFilter = ko.observable("");
         vm.sqlFilter = ko.observable("");
 
         function b64_to_utf8(str) {
@@ -311,7 +367,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
 
 
-        // Load databas structure
+        // Load database structure
         try{
             var db = {};
             //lbs.loader.loadDataSource(db, { type: 'storedProcedure', source: 'csp_lip_getxmldatabase_wrapper', alias: 'structure' }, false);
@@ -401,18 +457,11 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.shownTable = ko.observable();
         // All tables loaded
         vm.tables = ko.observableArray();
-        // Filtered tables. These are the ones loaded into the view
+        // Filtered arrays. These are the ones loaded into the view
         vm.filteredTables = ko.observableArray();
-
-
-
-        // Filtered Components
         vm.filteredComponents = ko.observableArray();
-
-        // Filtered Components
         vm.filteredLocalizations = ko.observableArray();
-
-        // Filtered SQL
+        vm.filteredActionpads = ko.observableArray();
         vm.filteredSql = ko.observableArray();
 
         // Load model objects
@@ -447,6 +496,15 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             if(vm.localizations()){
                 return ko.utils.arrayFilter(vm.localizations(),function(l){
                     return l.checked() | false;
+                });
+            }
+        });
+
+        // Computed with all selected actionpads
+        vm.selectedActionpads = ko.computed(function(){
+            if(vm.actionpads()){
+                return ko.utils.arrayFilter(vm.actionpads(),function(a) {
+                    return a.checked() | false;
                 });
             }
         });
@@ -486,6 +544,10 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.localizationFilter.subscribe(function(newValue){
             vm.filterLocalizations();
         });
+        
+        vm.actionpadsFilter.subscribe(function(newValue){
+            vm.filterActionpads();
+        });
 
         vm.sqlFilter.subscribe(function(newValue){
             vm.filterSql();
@@ -498,12 +560,16 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.getVbaComponents();
         checkIfVbaLoaded = true;
 
+        vm.getActionpads();
+        checkIfActionpadsLoaded = true;
+        
         // Set default filter
         vm.filterTables();
         vm.filterSql();
         vm.filterComponents();
-        
         vm.filterLocalizations();
+        vm.filterActionpads();
+
         $(window).scroll(function(){
             $("#localeInfo").stop().animate({"marginTop": ($(window).scrollTop()) + "px", "marginLeft":($(window).scrollLeft()) + "px"}, "slow" );
         });

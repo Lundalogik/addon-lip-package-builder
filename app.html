@@ -11,6 +11,7 @@
 			<li role="presentation" data-bind="css: {'active' : activeTab() == 'vba'}, click: function(){showTab('vba')}"><a href="#">VBA</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() == 'sql'}, click: function(){showTab('sql')}"><a href="#">SQL</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() == 'localize'}, click: function(){showTab('localize')}"><a href="#">Localizations</a></li>
+            <li role="presentation" data-bind="css: {'active' : activeTab() == 'actionpads'}, click: function(){showTab('actionpads')}"><a href="#">Actionpads</a></li>
 
 		</ul>
         
@@ -189,7 +190,7 @@
 		<!-- /ko -->
 	</div>
     <div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'sql'">
-		<h4>SQL</h4>
+		<h4>SQL Procedures and Functions</h4>
 		<!-- ko if: activeTab() == 'sql' -->
 		<div class="row">
 			<div class="col-md-5 col-margined">
@@ -294,6 +295,46 @@
 				  	</div>
 				</div>
 			<!-- /ko -->
+			</div>
+		</div>
+		<!-- /ko -->
+	</div>
+
+	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'actionpads'">
+		<h4>Actionpads</h4>
+		<!-- ko if: activeTab() == 'actionpads' -->
+		<div class="row">
+			<div class="col-md-5 col-margined">
+				<div class="input-group">
+			      	<div class="input-group-addon">
+			      		<span class="fa fa-search"/>
+			      	</div>
+					<input type="text" class="form-control" id="searchActionpadsInput" placeholder="Quick filter..." data-bind="value: actionpadsFilter, valueUpdate: 'afterkeydown'">
+			    </div>
+				<div class="list-group col-md-12">
+					<div class="list-group-item disabled">
+						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
+							<input class="select-all" type="checkbox" data-bind="checked: selectAllActionpads, popover: 'Select all'" >
+						</span>
+
+				  		<span class="col-md-5 list-header" data-bind="text: 'Table Name'"/>
+                        <span class="col-md-1 list-header" >&nbsp;</span>
+				  		<!--span class="col-md-5 list-header" data-bind="text: 'Type'"/-->
+				  	</div>
+					<!-- ko foreach: filteredActionpads() -->
+					<a class="list-group-item">
+						<span class="col-md-1 col-sm-1 col-md-1" >
+							<input type="checkbox" data-bind="checked: checked, stopBubble: true" >
+
+						</span>
+
+						<span class="col-md-5" data-bind="text: tableName"/>
+                        <span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
+						<!--span class="col-md-5" data-bind="text: type"/-->
+
+					</a>
+					<!-- /ko -->
+				</div>
 			</div>
 		</div>
 		<!-- /ko -->

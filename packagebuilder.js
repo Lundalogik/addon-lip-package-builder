@@ -12,6 +12,7 @@ packagebuilder = {
         var relations = {};
         var sqlObjects = [];
         var localizations = [];
+        var actionpads = [];
         if (vm.uniqueName() === '') {
             alert("You must specify a name. If you are creating a new add-on, it must be unique (check GitHub).");
             return;
@@ -198,12 +199,15 @@ packagebuilder = {
         try {
             var arrComponents = [];
             $.each(vm.selectedVbaComponents(), function(i, component){
-                arrComponents.push({"name": component.name, "relPath": "vba\\" + component.name + component.extension() })
+                arrComponents.push({
+                    "name": component.name,
+                    "relPath": "vba\\" + component.name + component.extension()
+                });
             });
 
 
             var arrLocalizations = [];
-            $.each(vm.selectedLocalizations(), function(i, locale){
+            $.each(vm.selectedLocalizations(), function(i, locale) {
                 arrLocalizations.push({
                     'owner' : locale.owner,
                     'code' : locale.code,
@@ -213,6 +217,15 @@ packagebuilder = {
                     'fi' : locale.fi,
                     'no' : locale.no,
                     'da' : locale.da
+                });
+            });
+
+            var arrActionpads = [];
+            $.each(vm.selectedActionpads(), function(i, a) {
+                arrActionpads.push({
+                    'tableName': a.tableName,
+                    'fileName': a.fileName,
+                    'relPath': "actionpads\\" + a.fileName
                 });
             });
             
@@ -237,22 +250,28 @@ packagebuilder = {
                 package_json.install.sql = sqlObjects
                 bSomethingToInstall = true;
             }
-
             
             if(arrLocalizations.length > 0){
                 package_json.install.localize = arrLocalizations;
                 bSomethingToInstall = true;
             }
 
+            if(arrActionpads.length > 0){
+                package_json.install.actionpads = arrActionpads;
+                bSomethingToInstall = true;
+            }
 
             if(arrComponents.length > 0){
                 package_json.install.vba = arrComponents;
                 bSomethingToInstall = true;
             }
             //lbs.log.debug(JSON.stringify(package_json));
-        }catch(e) {alert("Error serializing LIP Package:\n\n" + e);}
+        }
+        catch(e) {
+            alert("Error serializing LIP Package:\n\n" + e);
+        }
 
-        if(bSomethingToInstall){
+        if(bSomethingToInstall) {
             // Save using VBA Method
             try{
                 // Build metadata json from information added by user

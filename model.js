@@ -375,13 +375,13 @@ var Field = function(f, tablename){
 }
 
 // Status options (development, beta, release)
-var StatusOption = function(o){
-    var self = this;
-    self.text = o;
-    this.select = function(){
-        vm.status(this.text);
-    }
-}
+// var StatusOption = function(o){
+//     var self = this;
+//     self.text = o;
+//     this.select = function(){
+//         vm.status(this.text);
+//     }
+// }
 
 var VbaComponent = function(c){
     var self = this;
@@ -466,5 +466,13 @@ var Localize = function(l){
     self.select = function(){
         vm.selectedLocale(vm.selectedLocale() === self ? null : self);
     };
+    self.inExistingPackage = ko.observable(false);
+}
+
+var Actionpad = function(a) {
+    var self = this;
+    self.tableName = a.tableName;
+    self.fileName = a.fileName;
+    self.checked = ko.observable(false);
     self.inExistingPackage = ko.observable(false);
 }
