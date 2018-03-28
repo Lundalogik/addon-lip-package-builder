@@ -3,32 +3,25 @@
 <nav class="navbar navbar-default navbar-fixed-top">
 	<div class="container-fluid">
 		<div class="navbar-header">
-			<a class="navbar-brand" href="#">LIP Package Builder</a>
+			<div class="lippb-productname">LIP Package Builder</div>
+			<br>
+			<div class="lippb-productversion" data-bind="text: 'version: ' + lipPackageBuilderVersion()"></div>
 		</div>
 		<ul class="nav navbar-nav">
 			<li role="presentation" data-bind="css: {'active' : activeTab() === 'details'}, click: function(){showTab('details')}"><a href="#">Details</a></li>
-			<li role="presentation" data-bind="css: {'active' : activeTab() === 'database'}, click: function(){showTab('database')}"><a href="#">Database objects</a></li>
+			<li role="presentation" data-bind="css: {'active' : activeTab() === 'database'}, click: function(){showTab('database')}"><a href="#">Tables and Fields</a></li>
 			<li role="presentation" data-bind="css: {'active' : activeTab() === 'vba'}, click: function(){showTab('vba')}"><a href="#">VBA</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() === 'sql'}, click: function(){showTab('sql')}"><a href="#">SQL</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() === 'localize'}, click: function(){showTab('localize')}"><a href="#">Localizations</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() === 'actionpads'}, click: function(){showTab('actionpads')}"><a href="#">Actionpads</a></li>
-
 		</ul>
-        
 		<button type="button" class="btn btn-default pull-right navbar-btn" data-bind="click: serializePackage, icon: 'fa-floppy-o'">Generate Package</button>
+		<button type="button" class="btn btn-default pull-right navbar-btn" data-bind="click: openExistingPackage, icon: 'fa-folder-open-o'">Open Existing Package</button>
 	</div>
-	<div class="container-fluid" data-bind="visible:activeTab() === 'details'">
-	<ul class="nav navbar-nav"><li role="presentation" class="details-submenu"><a href="#" data-bind="icon:'fa-folder-open-o',tooltip:{text:'Open existing package'}, click:openExistingPackage">Open existing package</a></li></ul></div>
 </nav>
+
 <div class="package-container row col-md-12">
-
-  <div class ="version-no pull-right" data-bind="text: 'LIP Package Builder Version: ' + lipPackageBuilderVersion()"></div>
 	<div class="row col-md-10 col-md-offset-1 details-tab" data-bind="visible: activeTab() === 'details'">
-		<div class="row">
-            <!--button class="row col-md-1" type="button" id="open-existing-package-button" class="btn btn-default" data-bind="click: openExistingPackage, icon: 'fa-folder-open-o fa-2x', "> </button-->
-            <!--button class="row col-md-1 col-md-offset-1" type="button" id="download-appstore-package-button" class="btn btn-default" data-bind="click: downloadExistingPackage, icon: 'fa-cloud-download fa-2x', tooltip:{text:'Download package from appstore'}"> </button-->
-        </div>
-
         <form>
 		  	<div class="form-group col-md-4">
 		    	<label for="inputUniqueName">Name of Package / Add-on</label>
