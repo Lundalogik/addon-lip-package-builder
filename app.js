@@ -24,14 +24,12 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         enums.initialize(vm);
         packagebuilder.initialize(vm);
 
-        vm.appversion = ko.observable("0.0");
+        vm.lipPackageBuilderVersion = ko.observable(lbs.common.executeVba('LIPPackageBuilder.GetVersion'));
 
         vm.lastSelectedField = ko.observable({});
 
         // Checkbox to select all tables
         vm.selectTables = ko.observable(false);
-
-
 
         vm.selectTables.subscribe(function(newValue){
             ko.utils.arrayForEach(vm.filteredTables(),function(table){
@@ -83,17 +81,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                 a.checked(newValue);
             });
         });
-
-        vm.getVersion = function(){
-          try{
-              vm.appversion(lbs.common.executeVba('LIPPackageBuilder.CheckVersion'));       //##TODO: This function does not exist in VBA!
-            }
-            catch(e){
-              vm.appversion("N/A");
-            }
-        };
-
-        vm.getVersion();
 
         vm.getVbaComponents = function() {
             try{
@@ -544,7 +531,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.localizationFilter.subscribe(function(newValue){
             vm.filterLocalizations();
         });
-        
+
         vm.actionpadsFilter.subscribe(function(newValue){
             vm.filterActionpads();
         });

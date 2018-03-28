@@ -1,6 +1,9 @@
 Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
+' Used for showing in the GUI and also setting in the generated packages.json files.
+Private Const m_sLIPPackageBuilderVersion As String = "1.2.0"
+
 ' ##SUMMARY Opens the LBS app in a HTML window.
 Public Sub OpenPackageBuilder()
     On Error GoTo ErrorHandler
@@ -44,6 +47,47 @@ Public Function LoadDataStructure(strProcedureName As String) As String
     Exit Function
 ErrorHandler:
     Call UI.ShowError("LIPPackageBuilder.LoadDatastructure")
+End Function
+
+
+' ##SUMMARY Called from javascript.
+' Returns a JSON string with an array of objects with two parameters:
+' the file name and the table name of all the available Actionpad HTML files in the current solution.
+Public Function GetAvailableActionpads() As String
+    On Error GoTo ErrorHandler
+    
+    ' Build array of objects
+    Dim sActionpadsJson As String
+    sActionpadsJson = "["
+    
+    Dim sFileName As String
+    Dim sClassName As String
+    Dim lngCount As Long
+    lngCount = 0
+    sFileName = Dir(Application.WebFolder & "\*.htm*")
+    Do While Len(sFileName) > 0
+        lngCount = lngCount + 1
+        sClassName = VBA.Left(sFileName, VBA.InStr(sFileName, ".") - 1)
+        If Database.Classes.Exists(sClassName) Then
+            ' Add comma if there already is an element in the array
+            If lngCount > 1 Then
+                sActionpadsJson = sActionpadsJson + ","
+            End If
+            ' Add actionpad as object in the array
+            sActionpadsJson = sActionpadsJson & "{""tableName"": """ & sClassName & """, ""fileName"": """ & sFileName & """}"
+        End If
+        
+        sFileName = Dir
+    Loop
+    
+    ' Close array
+    sActionpadsJson = sActionpadsJson & "]"
+    
+    GetAvailableActionpads = sActionpadsJson
+
+    Exit Function
+ErrorHandler:
+    Call UI.ShowError("LIPPackageBuilder.GetAvailableActionpads")
 End Function
 
 
@@ -239,6 +283,15 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     If Not bResult Then
         Call Application.MessageBox("Could not export the sql descriptive expressions, will continue anyway...", vbInformation)
         bResult = True
+    End If
+    
+    ' Export Actionpads
+    If bResult And oPackage("install").Exists("actionpads") Then
+        bResult = ExportActionpads(oPackage, sTemporaryPackageFolderPath)
+    End If
+    If Not bResult Then
+        Call Application.MessageBox("Could not export Actionpads.", VBA.vbCritical + VBA.vbOKOnly)
+        Exit Sub
     End If
     
 
@@ -708,7 +761,7 @@ Private Function ExportSql(oPackage As Object, strTempFolder As String) As Boole
                     Exit Function
                 End If
                 Call oProcedure.Remove("definition")
-                Call oProcedure.add("relPath", "sql\" & oProcedure.Item("name") & ".sql")
+                Call oProcedure.Add("relPath", "sql\" & oProcedure.Item("name") & ".sql")
             Next
         End If
         
@@ -937,24 +990,24 @@ Private Function DeleteTemporaryFolder(strTempFolder As String) As Boolean
 
     'Delete all files and subfolders
     'Be sure that no file is open in the folder
-    Dim FSO As Object
+    Dim fso As Object
 
-    Set FSO = CreateObject("Scripting.FileSystemObject")
+    Set fso = CreateObject("Scripting.FileSystemObject")
     
     If Right(strTempFolder, 1) = "\" Then
         strTempFolder = Left(strTempFolder, Len(strTempFolder) - 1)
     End If
 
-    If FSO.FolderExists(strTempFolder) = False Then
+    If fso.FolderExists(strTempFolder) = False Then
         DeleteTemporaryFolder = True
         Exit Function
     End If
 
     On Error Resume Next
     'Delete files
-    FSO.DeleteFile strTempFolder & "\*.*", True
+    fso.DeleteFile strTempFolder & "\*.*", True
     'Delete subfolders
-    FSO.DeleteFolder strTempFolder & "\*.", True
+    fso.DeleteFolder strTempFolder & "\*.", True
     Call RmDir(strTempFolder)
     On Error GoTo 0
     
@@ -971,18 +1024,18 @@ Private Function SavePackageFile(oPackage As Object, strTempPath As String) As B
     On Error GoTo ErrorHandler
     
     Dim bResult As Boolean
-    Dim FSO As New FileSystemObject
+    Dim fso As New FileSystemObject
     Dim filePath As String
     filePath = strTempPath & "\package.json"
     bResult = True
     'Set FSO = CreateObject("Scripting.FileSystemObject")
     
     Dim oFile As Object
-    Set oFile = FSO.CreateTextFile(filePath, True, False)
+    Set oFile = fso.CreateTextFile(filePath, True, False)
     'Convert to a string and save
     Call oFile.WriteLine(JsonConverter.ConvertToJson(oPackage))
     oFile.Close
-    Set FSO = Nothing
+    Set fso = Nothing
     Set oFile = Nothing
     
     SavePackageFile = bResult
@@ -990,6 +1043,28 @@ Private Function SavePackageFile(oPackage As Object, strTempPath As String) As B
     Exit Function
 ErrorHandler:
     bResult = False
+End Function
+
+
+' ##SUMMARY Exports all Actionpads included in the Package JSON.
+Private Function ExportActionpads(ByRef oPackage As Object, sTempFolder As String) As Boolean
+    On Error GoTo ErrorHandler
+    
+    If Not oPackage.Item("install") Is Nothing Then
+        If Not oPackage.Item("install").Item("actionpads") Is Nothing Then
+            Dim oActionpad As Object
+            Dim sActionpadsFolderPath As String
+            sActionpadsFolderPath = CreateFolder(sTempFolder, "actionpads")
+            For Each oActionpad In oPackage.Item("install").Item("actionpads")
+                Call VBA.FileCopy(LCO.MakeFileName(Application.WebFolder, oActionpad.Item("fileName")), LCO.MakeFileName(sActionpadsFolderPath, oActionpad.Item("fileName")))
+            Next
+        End If
+    End If
+    ExportActionpads = True
+    
+    Exit Function
+ErrorHandler:
+    ExportActionpads = False
 End Function
 
 
@@ -1006,6 +1081,7 @@ Private Function ExportVBA(oPackage As Object, strTempFolder As String) As Boole
             Dim sVBAFolderPath As String
             sVBAFolderPath = CreateFolder(strTempFolder, "vba")
             For Each oModule In oPackage.Item("install").Item("vba")
+                
                 bResult = ExportVBAModule(oModule.Item("name"), sVBAFolderPath)
                 If bResult = False Then
                     ExportVBA = False
@@ -1018,7 +1094,7 @@ Private Function ExportVBA(oPackage As Object, strTempFolder As String) As Boole
     
     Exit Function
 ErrorHandler:
-    bResult = False
+    ExportVBA = False
 End Function
 
 
@@ -1056,7 +1132,7 @@ Private Function ExportVBAModule(ModuleName As String, sVBAFolderPath As String)
     
     Exit Function
 ErrorHandler:
-    bResult = False
+    ExportVBAModule = False
 End Function
 
 
@@ -1106,14 +1182,14 @@ Public Function GetLocalizations(ByVal sOwner As String) As Records
     Dim oFilter As New LDE.Filter
     Dim oView As New LDE.View
     
-    Call oView.add("owner", lkSortAscending)
-    Call oView.add("code")
-    Call oView.add("context")
-    Call oView.add("sv")
-    Call oView.add("en_us")
-    Call oView.add("no")
-    Call oView.add("fi")
-    Call oView.add("da")
+    Call oView.Add("owner", lkSortAscending)
+    Call oView.Add("code")
+    Call oView.Add("context")
+    Call oView.Add("sv")
+    Call oView.Add("en_us")
+    Call oView.Add("no")
+    Call oView.Add("fi")
+    Call oView.Add("da")
     If sOwner <> "" Then
         Call oFilter.AddCondition("owner", lkOpEqual, sOwner)
     End If
@@ -1145,9 +1221,9 @@ Public Function OpenExistingPackage() As String
     If LCO.ExtractFileExtension(strFilePath) = "zip" Then
         Dim strTempFolderPath As String
         strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
-        Dim FSO As New Scripting.FileSystemObject
-        If Not FSO.FolderExists(strTempFolderPath) Then
-            Call FSO.CreateFolder(strTempFolderPath)
+        Dim fso As New Scripting.FileSystemObject
+        If Not fso.FolderExists(strTempFolderPath) Then
+            Call fso.CreateFolder(strTempFolderPath)
         End If
 
 
@@ -1337,4 +1413,14 @@ ErrorHandler:
 End Function
 
 
+' ##SUMMARY Called from javascript. Returns the version of the LIP Package Builder as a string.
+Public Function GetVersion() As String
+    On Error GoTo ErrorHandler
+
+    GetVersion = m_sLIPPackageBuilderVersion
+
+    Exit Function
+ErrorHandler:
+    Call UI.ShowError("LIPPackageBuilder.GetVersion")
+End Function
 

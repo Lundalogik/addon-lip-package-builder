@@ -20,9 +20,9 @@ initPackageLoader = function(viewModel){
             // Set details in "details" screen
             try{
                 // ##TODO: What to do with these things now that they do not exist in package.json anymore?
-                vm.description(vm.existingPackage.description);
-                //vm.versionNumber(vm.existingPackage.versionNumber);   //##TODO: What to do with this if add-on is opened? Auto-increment somehow? Just show the previous beside the input?
-                vm.uniqueName(vm.existingPackage.name);
+                // vm.description(vm.existingPackage.description);
+                vm.versionNumber(vm.existingPackage.addonOrPackageVersion);   //##TODO: What to do with this if add-on is opened? Auto-increment somehow? Just show the previous beside the input?
+                vm.uniqueName(vm.existingPackage.uniqueName);
             }
             catch(e){alert("Error parsing package: " + e);}
             // Flag objects loaded from the package

@@ -6,23 +6,24 @@
 			<a class="navbar-brand" href="#">LIP Package Builder</a>
 		</div>
 		<ul class="nav navbar-nav">
-			<li role="presentation" data-bind="css: {'active' : activeTab() == 'details'}, click: function(){showTab('details')}"><a href="#">Details</a></li>
-			<li role="presentation" data-bind="css: {'active' : activeTab() == 'database'}, click: function(){showTab('database')}"><a href="#">Database objects</a></li>
-			<li role="presentation" data-bind="css: {'active' : activeTab() == 'vba'}, click: function(){showTab('vba')}"><a href="#">VBA</a></li>
-            <li role="presentation" data-bind="css: {'active' : activeTab() == 'sql'}, click: function(){showTab('sql')}"><a href="#">SQL</a></li>
-            <li role="presentation" data-bind="css: {'active' : activeTab() == 'localize'}, click: function(){showTab('localize')}"><a href="#">Localizations</a></li>
-            <li role="presentation" data-bind="css: {'active' : activeTab() == 'actionpads'}, click: function(){showTab('actionpads')}"><a href="#">Actionpads</a></li>
+			<li role="presentation" data-bind="css: {'active' : activeTab() === 'details'}, click: function(){showTab('details')}"><a href="#">Details</a></li>
+			<li role="presentation" data-bind="css: {'active' : activeTab() === 'database'}, click: function(){showTab('database')}"><a href="#">Database objects</a></li>
+			<li role="presentation" data-bind="css: {'active' : activeTab() === 'vba'}, click: function(){showTab('vba')}"><a href="#">VBA</a></li>
+            <li role="presentation" data-bind="css: {'active' : activeTab() === 'sql'}, click: function(){showTab('sql')}"><a href="#">SQL</a></li>
+            <li role="presentation" data-bind="css: {'active' : activeTab() === 'localize'}, click: function(){showTab('localize')}"><a href="#">Localizations</a></li>
+            <li role="presentation" data-bind="css: {'active' : activeTab() === 'actionpads'}, click: function(){showTab('actionpads')}"><a href="#">Actionpads</a></li>
 
 		</ul>
         
 		<button type="button" class="btn btn-default pull-right navbar-btn" data-bind="click: serializePackage, icon: 'fa-floppy-o'">Generate Package</button>
 	</div>
-<div class="container-fluid" data-bind="visible:activeTab() =='details'"><ul class="nav navbar-nav"><li role="presentation" class="details-submenu"><a href="#" data-bind="icon:'fa-folder-open-o',tooltip:{text:'Open existing package'}, click:openExistingPackage">Open existing package</a></li></ul></div>
+	<div class="container-fluid" data-bind="visible:activeTab() === 'details'">
+	<ul class="nav navbar-nav"><li role="presentation" class="details-submenu"><a href="#" data-bind="icon:'fa-folder-open-o',tooltip:{text:'Open existing package'}, click:openExistingPackage">Open existing package</a></li></ul></div>
 </nav>
 <div class="package-container row col-md-12">
 
-  <div class ="version-no pull-right" data-bind="text: 'Version: ' + appversion()"></div>
-	<div class="row col-md-10 col-md-offset-1 details-tab" data-bind="visible: activeTab() == 'details'">
+  <div class ="version-no pull-right" data-bind="text: 'LIP Package Builder Version: ' + lipPackageBuilderVersion()"></div>
+	<div class="row col-md-10 col-md-offset-1 details-tab" data-bind="visible: activeTab() === 'details'">
 		<div class="row">
             <!--button class="row col-md-1" type="button" id="open-existing-package-button" class="btn btn-default" data-bind="click: openExistingPackage, icon: 'fa-folder-open-o fa-2x', "> </button-->
             <!--button class="row col-md-1 col-md-offset-1" type="button" id="download-appstore-package-button" class="btn btn-default" data-bind="click: downloadExistingPackage, icon: 'fa-cloud-download fa-2x', tooltip:{text:'Download package from appstore'}"> </button-->
@@ -62,7 +63,7 @@
 		</form>
 
 	</div>
-	<div class="row col-md-12 col-md-offset-1" data-bind="visible: activeTab() == 'database'">
+	<div class="row col-md-12 col-md-offset-1" data-bind="visible: activeTab() === 'database'">
 		<div class="row">
 			<div class="col-md-5">
 				<h4>Tables</h4>
@@ -150,7 +151,7 @@
 		</div>
 	</div>
 
-	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'vba'">
+	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() === 'vba'">
 		<h4>VBA</h4>
 		<!-- ko if: showComponents() -->
 		<div class="row">
@@ -189,9 +190,9 @@
 		</div>
 		<!-- /ko -->
 	</div>
-    <div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'sql'">
+    <div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() === 'sql'">
 		<h4>SQL Procedures and Functions</h4>
-		<!-- ko if: activeTab() == 'sql' -->
+		<!-- ko if: activeTab() === 'sql' -->
 		<div class="row">
 			<div class="col-md-5 col-margined">
 				<div class="input-group">
@@ -228,7 +229,7 @@
 		</div>
 		<!-- /ko -->
 	</div>
-	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'localize'">
+	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() === 'localize'">
 		<h4>Localizations</h4>
 		<!-- ko if: showLocalizations() -->
 		<div class="row">
@@ -247,7 +248,7 @@
 
 				  		<span class="col-md-4 list-header" data-bind="text: 'Owner'"/>
 				  		<span class="col-md-4 list-header" data-bind="text: 'Code'" />
-                        <span class="col-md-1 list-header" >&nbsp;</span>
+                        <span class="col-md-1 list-header">&nbsp;</span>
                         
 
 				  	</div>
@@ -300,9 +301,9 @@
 		<!-- /ko -->
 	</div>
 
-	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() == 'actionpads'">
+	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() === 'actionpads'">
 		<h4>Actionpads</h4>
-		<!-- ko if: activeTab() == 'actionpads' -->
+		<!-- ko if: activeTab() === 'actionpads' -->
 		<div class="row">
 			<div class="col-md-5 col-margined">
 				<div class="input-group">

@@ -232,7 +232,10 @@ packagebuilder = {
             // Build package json from database structure
             var package_json = {
                 "install" : {
-                }
+                },
+                "createdWithLIPPackageBuilderVersion" : vm.lipPackageBuilderVersion(),
+                "uniqueName" : vm.uniqueName(),
+                "addonOrPackageVersion" : vm.versionNumber()
             };
 
             var bSomethingToInstall = false;
