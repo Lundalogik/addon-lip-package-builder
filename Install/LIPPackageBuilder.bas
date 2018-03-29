@@ -1256,6 +1256,35 @@ UnzipError:
 End Function
 
 
+' ##SUMMARY Called from javascript.
+' Lets the user select an existing CHANGELOG.md file. Then it retrieves information about
+' the version number and authors of the latest version.
+' If the user cancels the file dialog then an empty JSON object will be returned.
+Public Function OpenExistingChangelog() As String
+    On Error GoTo ErrorHandler
+
+    ' Let the user select a file
+    '##TODO
+    
+    ' Read line by line until the wanted information has been found.
+    '##TODO
+    
+    ' Build JSON containing the desired information
+    Dim sChangelogInfoJson As String
+    sChangelogInfoJson = "{" _
+                            & """versionNumber"" : """ & "1.2.3" & """," _
+                            & """authors"" : """ & "FER" & """" _
+                        & "}"
+    
+    OpenExistingChangelog = sChangelogInfoJson
+
+    Exit Function
+ErrorHandler:
+    OpenExistingChangelog = "{}"
+    Call UI.ShowError("LIPPackageBuilder.OpenExistingChangelog")
+End Function
+
+
 Private Sub UnZip(strTargetPath As String, Fname As Variant)
     Dim oApp As Object, FSOobj As Object
     Dim FileNameFolder As Variant

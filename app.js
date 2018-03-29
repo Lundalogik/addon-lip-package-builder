@@ -10,7 +10,12 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             this.yourPropertyDefinedWhenTheAppIsUsed = appConfig.yourProperty;
             this.dataSources = [];
             this.resources = {
-                scripts: ['model.js', 'enums.js', 'packagebuilder.js', 'existing_package_loader.js'], // <= External libs for your apps. Must be a file
+                scripts: ['model.js',
+                    'enums.js',
+                    'packagebuilder.js',
+                    'existing_package_loader.js',
+                    'scripts/app.changelogloader.js'
+                ], // <= External libs for your apps. Must be a file
                 styles: ['app.css'], // <= Load styling for the app.
                 libs: ['json2xml.js'] // <= Allready included libs, put not loaded per default. Example json2xml.js
             };
@@ -19,12 +24,75 @@ lbs.apploader.register('LIPPackageBuilder', function () {
     //initialize
     self.initialize = function (node, vm) {
 
+        // Set some GUI texts and settings
         $('title').html('LIP Package Builder');
+        vm.lipPackageBuilderVersion = ko.observable(lbs.common.executeVba('LIPPackageBuilder.GetVersion'));
+        vm.isAddon = ko.observable(true);
+        vm.inputLabelUniqueName = ko.computed(function() {
+            if (vm.isAddon()) {
+                return 'Unique Name of Add-on';
+            }
+            else {
+                return 'Unique Name of Package';
+            }
+        }, this);
+
+        vm.changelog_mdUploaded = ko.observable(false);
+        vm.metadata_jsonUploaded = ko.observable(false);
+        vm.versioningExplanation = ko.computed(function() {
+            if (vm.changelog_mdUploaded()) {
+                return 'Information entered below will be added to the uploaded CHANGELOG.md file.';
+            }
+            else {
+                return 'Information entered below will be inserted into a brand new CHANGELOG.md file.';
+            }
+        }, this);
+
+        // Info regarding opened existing CHANGELOG.md
+        vm.existingChangelogVersion = new Version('');
+        vm.existingChangelogAuthors = ko.observable('');
+        
+        vm.existingChangelogVersionText = ko.computed(function() {
+            if (vm.changelog_mdUploaded()) {
+                return 'The latest version in the uploaded changelog is: ' + vm.existingChangelogVersion.fullNumber() + '.';
+            }
+            else {
+                return '';
+            }
+        }, this);
+
+        vm.existingChangelogAuthorsText = ko.computed(function() {
+            if (vm.changelog_mdUploaded()) {
+                return 'The author(s) of the latest version in the uploaded changelog is: ' + vm.existingChangelogAuthors() + '.';
+            }
+            else {
+                return '';
+            }
+        }, this);
+
+        vm.setAuthorToUploaded = function() {
+            vm.authors(vm.existingChangelogAuthors());
+        }
+
+        // Called from GUI on click on helper buttons for setting version according to uploaded CHANGELOG.md.
+        vm.setVersion = function(additions) {
+            if (additions === 'breakingchanges' || additions === 'newfeatures' || additions === 'patches') {
+                var v = new Version(vm.existingChangelogVersion.fullNumber());                
+                if (additions === 'breakingchanges') {
+                    v.increaseMajor();
+                }
+                else if (additions === 'newfeatures') {
+                    v.increaseMinor();
+                }
+                else if (additions === 'patches') {
+                    v.increasePatch();
+                }
+                vm.version(v);
+            }
+        }
 
         enums.initialize(vm);
         packagebuilder.initialize(vm);
-
-        vm.lipPackageBuilderVersion = ko.observable(lbs.common.executeVba('LIPPackageBuilder.GetVersion'));
 
         vm.lastSelectedField = ko.observable({});
 
@@ -195,7 +263,16 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             if (vm.existingPackage){
                 parseExistingPackage();
             }
+        }
 
+        vm.openExistingMetadataJson = function() {
+            //##TODO!
+            alert("Not implemented");
+        }
+
+        // Called upon button click in GUI
+        vm.openExistingChangelogMd = function() {
+            app.changelogloader.openExistingChangelog(vm);
         }
 
         vm.downloadExistingPackage = function(){
@@ -313,7 +390,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             }
         }
 
-        vm.serializePackage = function(){
+        vm.serializePackage = function() {
             packagebuilder.serializePackage();
         }
 
@@ -408,19 +485,11 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         // Data from details
         vm.uniqueName = ko.observable("");
         vm.displayName = ko.observable("");
-        vm.authors = ko.observable("");
-        vm.versionNumber = ko.observable("");
-        vm.versionComment = ko.observable("");
+        vm.authors = ko.observable("");             // ##TODO: Should be a part of the Version object
+        vm.version = ko.observable(new Version(''));
+        vm.versionComment = ko.observable("");      // ##TODO: Should be a part of the Version object
         vm.description = ko.observable("");
         
-        // Set default status to development
-        // vm.status = ko.observable("Development");
-
-        // Set status options
-        // vm.statusOptions = ko.observableArray([
-        //     new StatusOption('Development'), new StatusOption('Beta'), new StatusOption('Release')
-        // ]);
-
         // Load localization data
         try{
 

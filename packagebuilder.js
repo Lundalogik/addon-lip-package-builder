@@ -235,7 +235,7 @@ packagebuilder = {
                 },
                 "createdWithLIPPackageBuilderVersion" : vm.lipPackageBuilderVersion(),
                 "uniqueName" : vm.uniqueName(),
-                "addonOrPackageVersion" : vm.versionNumber()
+                "addonVersion" : (vm.isAddon() ? vm.version().fullNumber() : '')
             };
 
             var bSomethingToInstall = false;
@@ -298,7 +298,7 @@ packagebuilder = {
                 var changelog_md = {
                     "displayName": vm.displayName(),
                     "authors": vm.authors(),
-                    "versionNumber": vm.versionNumber(),
+                    "versionNumber": vm.version().fullNumber(),
                     "versionComment": vm.versionComment(),
                     "date": moment().format("YYYY-MM-DD")
                 };

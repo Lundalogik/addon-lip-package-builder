@@ -476,3 +476,39 @@ var Actionpad = function(a) {
     self.checked = ko.observable(false);
     self.inExistingPackage = ko.observable(false);
 }
+
+var Version = function(str) {
+    var self = this;
+    
+    if (str === '') {
+        self.major = ko.observable('');
+        self.minor = ko.observable('');
+        self.patch = ko.observable('');
+    }
+    else {
+        self.major = ko.observable('5'); //##TODO
+        self.minor = ko.observable('6'); //##TODO
+        self.patch = ko.observable('7'); //##TODO
+    }
+
+    self.increaseMajor = function() {
+        self.major((parseInt(self.major()) + 1).toString());
+    }
+
+    self.increaseMinor = function() {
+        self.minor((parseInt(self.minor()) + 1).toString());
+    }
+
+    self.increasePatch = function() {
+        self.patch((parseInt(self.patch()) + 1).toString());
+    }
+
+    self.fullNumber = ko.computed(function() {
+        if (self.major() !== '' && self.minor() !== '' && self.patch() !== '') {
+            return self.major() + '.' + self.minor() + '.' + self.patch();
+        }
+        else {
+            return '';
+        }
+    }, this);
+}
