@@ -15,13 +15,11 @@ initPackageLoader = function(viewModel){
                     clearCollection(table.guiFields(),"selected");
                 });
                 clearCollection(vm.localizations(),"checked");
+                clearCollection(vm.actionpads(), 'checked');
             }
             catch(e){alert(e);}
-            // Set details in "details" screen
+            // Set details in "details" tab
             try{
-                // ##TODO: What to do with these things now that they do not exist in package.json anymore?
-                // vm.description(vm.existingPackage.description);
-                vm.versionNumber(vm.existingPackage.addonOrPackageVersion);   //##TODO: What to do with this if add-on is opened? Auto-increment somehow? Just show the previous beside the input?
                 vm.uniqueName(vm.existingPackage.uniqueName);
             }
             catch(e){alert("Error parsing package: " + e);}
@@ -30,6 +28,7 @@ initPackageLoader = function(viewModel){
             loadExistingVba();
             loadExistingSQL();
             loadExistingLocalizations();
+            loadExistingActionpads();
             
 }
 /**
@@ -137,11 +136,11 @@ loadExistingSQL = function(){
 loadExistingLocalizations = function(){
     var existingPackageLocalizations = vm.existingPackage.install.localize;
     
-    if(!existingPackageLocalizations){
-        
+    if(!existingPackageLocalizations) {
         return;
     }
-    try{
+
+    try {
         //Fetch localizations from package
         ko.utils.arrayForEach(existingPackageLocalizations, function(eLocalizations){
             //Fetch localizations named the same as in the existing package as in the current database, select it and mark as inExistingPackage
@@ -155,5 +154,36 @@ loadExistingLocalizations = function(){
             });
         });
     }
-    catch(e){alert(e);}
+    catch(e) {
+        alert(e);
+    }
+}
+
+/**
+ * Flags the viewmodels actionpads collection as inExistingPackage and checked
+ * 
+ */  
+loadExistingActionpads = function() {
+    var existingPackageActionpads = vm.existingPackage.install.actionpads;
+    
+    if(!existingPackageActionpads) {
+        return;
+    }
+    
+    try {
+        // Loop actionpads from opened package.
+        ko.utils.arrayForEach(existingPackageActionpads, function(existingActionpad) {
+            // Loop actionpads from the current application. If they are for the same table as the one in the opened package,
+            // select it and mark as inExistingPackage.
+            ko.utils.arrayForEach(vm.actionpads(), function (currentApplicationActionpad){
+                if(currentApplicationActionpad.tableName  === existingActionpad.tableName) {
+                    currentApplicationActionpad.checked(true);
+                    currentApplicationActionpad.inExistingPackage(true);
+                }
+            });
+        });
+    }
+    catch(e) {
+        alert(e);
+    }
 }
