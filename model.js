@@ -480,15 +480,30 @@ var Actionpad = function(a) {
 var Version = function(str) {
     var self = this;
     
-    if (str === '') {
-        self.major = ko.observable('');
-        self.minor = ko.observable('');
-        self.patch = ko.observable('');
-    }
-    else {
-        self.major = ko.observable('5'); //##TODO
-        self.minor = ko.observable('6'); //##TODO
-        self.patch = ko.observable('7'); //##TODO
+    // Set default values
+    self.major = ko.observable('');
+    self.minor = ko.observable('');
+    self.patch = ko.observable('');
+
+    if (str !== '') {
+        // Check if version formatted as x.y.z where x, y, z are numbers.
+        if (/^[0-9]*\.[0-9]*\.[0-9]*$/.test(str)) {
+            // Retrieve actual numbers
+            var arr = str.split('.');
+            var ma = parseInt(arr[0]);
+            var mi = parseInt(arr[1]);
+            var pa = parseInt(arr[2]);
+
+            // All numbers can't be zero
+            if (ma === 0 && mi === 0 && pa === 0) {
+                return;
+            }
+            
+            // Number seems ok => assign observables.
+            self.major(ma);
+            self.minor(mi);
+            self.patch(pa);
+        }
     }
 
     self.increaseMajor = function() {
