@@ -55,15 +55,17 @@
 				<div class="form-group col-md-12 lippb-formsectionheader">
 					<span class="lippb-formheadertext">VERSIONING</span>
 					<hr class="lippb-formsectiondivider lippb-formsectiondividerlessmargin">
-					<div class="lippb-formsubheader" data-bind="visible: changelog_mdUploaded()">CHANGELOG.md uploaded</div>
-					<div class="lippb-formsubheadercontent" data-bind="visible: changelog_mdUploaded()">
-						<span class="lippb-forminputexplanation" data-bind="text: existingChangelogVersionText"></span>
-						<span class="label label-default lippb-inlinelabelbutton" data-bind="click: function() { setVersion('breakingchanges'); }">Breaking Changes</span>
-						<span class="label label-default lippb-inlinelabelbutton" data-bind="click: function() { setVersion('newfeatures'); }">New Features</span>
-						<span class="label label-default lippb-inlinelabelbutton" data-bind="click: function() { setVersion('patches'); }">Patch</span>
-						<br>
-						<span class="lippb-forminputexplanation" data-bind="text: existingChangelogAuthorsText"></span>
-						<span class="label label-default lippb-inlinelabelbutton" data-bind="click: setAuthorToUploaded">Use</span>
+					<div class="bs-callout bs-callout-default lippb-uploadinfo" data-bind="visible: changelog_mdUploaded()">
+						<div class="lippb-formsubheader">CHANGELOG.md uploaded</div>
+						<div class="lippb-formsubheadercontent">
+							<span class="lippb-forminputexplanation" data-bind="text: existingChangelogVersionText"></span>
+							<span class="label label-default lippb-inlinelabelbutton" data-bind="click: function() { setVersion('breakingchanges'); }">Breaking Changes</span>
+							<span class="label label-default lippb-inlinelabelbutton" data-bind="click: function() { setVersion('newfeatures'); }">New Features</span>
+							<span class="label label-default lippb-inlinelabelbutton" data-bind="click: function() { setVersion('patches'); }">Patch</span>
+							<br>
+							<span class="lippb-forminputexplanation" data-bind="text: existingChangelogAuthorsText"></span>
+							<span class="label label-default lippb-inlinelabelbutton" data-bind="click: setAuthorToUploaded">Use</span>
+						</div>
 					</div>
 					<p class="lippb-forminputexplanation" data-bind="text: versioningExplanation"></p>
 				</div>
