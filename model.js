@@ -498,7 +498,7 @@ var Version = function(str) {
             if (ma === 0 && mi === 0 && pa === 0) {
                 return;
             }
-            
+
             // Number seems ok => assign observables.
             self.major(ma);
             self.minor(mi);
@@ -508,10 +508,13 @@ var Version = function(str) {
 
     self.increaseMajor = function() {
         self.major((parseInt(self.major()) + 1).toString());
+        self.minor(0);
+        self.patch(0);
     }
 
     self.increaseMinor = function() {
         self.minor((parseInt(self.minor()) + 1).toString());
+        self.patch(0);
     }
 
     self.increasePatch = function() {
