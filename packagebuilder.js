@@ -309,6 +309,7 @@ packagebuilder = {
                                         + ',' + window.btoa(JSON.stringify(metadata_json))
                                         + ',' + window.btoa(JSON.stringify(readme_md))
                                         + ',' + window.btoa(JSON.stringify(changelog_md))
+                                        + ',' + vm.isAddon()
                                     );
 
             }

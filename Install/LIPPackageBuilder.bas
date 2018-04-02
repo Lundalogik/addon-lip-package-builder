@@ -186,7 +186,7 @@ End Function
 
 ' ##SUMMARY Called from javascript when the user clicks the button to create the package.
 ' Parameters should be submitted as Base64 encoded JSON strings.
-Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As String, sChangelogInfo As String)
+Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As String, sChangelogInfo As String, isAddon As Boolean)
     On Error GoTo ErrorHandler
     
     Dim bResult As Boolean
@@ -344,8 +344,6 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     Dim sZipFileFullPath As String
     If bResult Then
         Dim sZipName As String
-        Dim isAddon As Boolean          '##TODO: Add this as checkbox to GUI instead. The checkbox should toggle visibility of more fields to fill.
-        isAddon = False
         
         If isAddon Then
             sZipName = "lip-add-on-" & oMetaData.Item("uniqueName") & "-v" & oChangelogInfo.Item("versionNumber")
@@ -1429,7 +1427,16 @@ Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As Stri
     sChangelog = VBA.Replace(sChangelog, "<*versionNumber*>", oChangelogInfo.Item("versionNumber"))
     sChangelog = VBA.Replace(sChangelog, "<*date*>", oChangelogInfo.Item("date"))
     sChangelog = VBA.Replace(sChangelog, "<*authors*>", oChangelogInfo.Item("authors"))
-    sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", oChangelogInfo.Item("versionComment"))
+    
+    ' Add an * at the beginning of the version comments if not already there.
+    Dim comments As String
+    comments = oChangelogInfo.Item("versionComment")
+    If comments <> "" Then
+        If Not VBA.Left(comments, 1) = "*" Then
+            comments = "*" & comments
+        End If
+    End If
+    sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", comments)
     
     Call SaveTextToDisk(sChangelog, sPath, "CHANGELOG.md")
     
