@@ -1432,8 +1432,8 @@ Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As Stri
     Dim comments As String
     comments = oChangelogInfo.Item("versionComment")
     If comments <> "" Then
-        If Not VBA.Left(comments, 1) = "*" Then
-            comments = "*" & comments
+        If Not VBA.Left(comments, 2) = "* " Then
+            comments = "* " & comments
         End If
     End If
     sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", comments)
