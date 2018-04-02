@@ -481,13 +481,18 @@ var Version = function(str) {
     var self = this;
     
     // Set default values
-    self.major = ko.observable('');
-    self.minor = ko.observable('');
-    self.patch = ko.observable('');
+    self.major = ko.observable(0);
+    self.minor = ko.observable(0);
+    self.patch = ko.observable(0);
 
-    if (str !== '') {
+    self.setValue = function(str) {
+        // Restore values first
+        self.major(0);
+        self.minor(0);
+        self.patch(0);
+
         // Check if version formatted as x.y.z where x, y, z are numbers.
-        if (/^[0-9]*\.[0-9]*\.[0-9]*$/.test(str)) {
+        if (/^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$/.test(str)) {
             // Retrieve actual numbers
             var arr = str.split('.');
             var ma = parseInt(arr[0]);
@@ -503,7 +508,11 @@ var Version = function(str) {
             self.major(ma);
             self.minor(mi);
             self.patch(pa);
-        }
+        }    
+    }
+
+    if (str !== '') {
+        self.setValue(str);
     }
 
     self.increaseMajor = function() {
@@ -521,12 +530,19 @@ var Version = function(str) {
         self.patch((parseInt(self.patch()) + 1).toString());
     }
 
-    self.fullNumber = ko.computed(function() {
-        if (self.major() !== '' && self.minor() !== '' && self.patch() !== '') {
-            return self.major() + '.' + self.minor() + '.' + self.patch();
-        }
-        else {
-            return '';
-        }
-    }, this);
+    self.fullNumber = ko.computed({
+        read: function() {
+            // If not all values are equal to zero, concatenate full version string and return
+            if (!(self.major() === 0 && self.minor() === 0 && self.patch() === 0)) {
+                return self.major().toString() + '.' + self.minor().toString() + '.' + self.patch().toString();
+            }
+            else {
+                return '';
+            }
+        },
+        write: function(str) {
+            self.setValue(str);
+        },
+        owner: this
+    });
 }
