@@ -5,6 +5,6 @@
 
 **Authors:** <*authors*>
 
-**Comment:**
+**Comments:**
 
-<*versionComment*>
+<*versionComments*>
