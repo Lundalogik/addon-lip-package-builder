@@ -2,7 +2,7 @@
 var vm = {};
 
 // Load viewmodel
-initModel = function(viewModel){
+initModels = function(viewModel){
     vm = viewModel;
 }
 

@@ -7,13 +7,12 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         The variabels specified in "config:{}", when you initalize your app are available in in the object "appConfig".
     */
     self.config =  function(appConfig){
-            this.yourPropertyDefinedWhenTheAppIsUsed = appConfig.yourProperty;
             this.dataSources = [];
             this.resources = {
-                scripts: ['model.js',
-                    'enums.js',
-                    'packagebuilder.js',
-                    'existing_package_loader.js',
+                scripts: ['scripts/models.js',
+                    'scripts/enums.js',
+                    'scripts/packagebuilder.js',
+                    'scripts/existing_package_loader.js',
                     'scripts/app.changelogloader.js'
                 ], // <= External libs for your apps. Must be a file
                 styles: ['app.css'], // <= Load styling for the app.
@@ -521,7 +520,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.filteredSql = ko.observableArray();
 
         // Load model objects
-        initModel(vm);
+        initModels(vm);
 
         try{
         // Populate table objects
