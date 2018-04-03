@@ -4,6 +4,9 @@ Option Explicit
 ' Used for showing in the GUI and also setting in the generated packages.json files.
 Private Const m_sLIPPackageBuilderVersion As String = "1.2.0"
 
+' Used for storing an uploaded existing CHANGELOG.md file until createPackage is called.
+Private m_uploaded_changelog_md As String
+
 ' ##SUMMARY Opens the LBS app in a HTML window.
 Public Sub OpenPackageBuilder()
     On Error GoTo ErrorHandler
@@ -1203,30 +1206,25 @@ End Function
 Public Function OpenExistingPackage() As String
     On Error GoTo ErrorHandler
     
-    Dim o As New LCO.FileOpenDialog
-    Dim strFilePath As String
-    o.AllowMultiSelect = False
-    o.Caption = "Select Package file"
-    o.Filter = "Zipped Package files (*.zip) | *.zip"
-
-    o.DefaultFolder = LCO.GetDesktopPath
-    If o.show = vbOK Then
-        strFilePath = o.FileName
-    Else
+    ' Let the user select a zip file
+    Dim sFilePath As String
+    sFilePath = SelectFile("Select Package file", "Zipped Package files (*.zip) | *.zip")
+    
+    ' Check if user cancelled
+    If sFilePath = "" Then
         Exit Function
     End If
-
-    If LCO.ExtractFileExtension(strFilePath) = "zip" Then
+    
+    If LCO.ExtractFileExtension(sFilePath) = "zip" Then
         Dim strTempFolderPath As String
         strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
         Dim fso As New Scripting.FileSystemObject
         If Not fso.FolderExists(strTempFolderPath) Then
             Call fso.CreateFolder(strTempFolderPath)
         End If
-
-
+        
         On Error GoTo UnzipError
-        Call UnZip(strTempFolderPath, strFilePath)
+        Call UnZip(strTempFolderPath, sFilePath)
 
         On Error GoTo ErrorHandler
         Dim strJson As String
@@ -1260,18 +1258,68 @@ End Function
 ' If the user cancels the file dialog then an empty JSON object will be returned.
 Public Function OpenExistingChangelog() As String
     On Error GoTo ErrorHandler
-
-    ' Let the user select a file
-    '##TODO
     
-    ' Read line by line until the wanted information has been found.
-    '##TODO
+    ' Clear module variable for file content
+    m_uploaded_changelog_md = ""
+    
+    ' Let the user select a file
+    Dim sFilePath As String
+    sFilePath = SelectFile("Select CHANGELOG.md file", "Markdown files (*.md) | *.md")
+    
+    ' Check if user cancelled
+    If sFilePath = "" Then
+        OpenExistingChangelog = "{}"
+        Exit Function
+    End If
+    
+    ' Extract info from the file and store complete file content in the module variable
+    Dim sVersionNumber As String
+    Dim sAuthors As String
+    
+    If LCO.ExtractFileExtension(sFilePath) = "md" Then
+        ' Read line by line until the wanted information has been found.
+        Dim iFilenum As Integer
+        Dim s As String
+        Dim bVersionNumberFound As Boolean
+        Dim bAuthorsFound As Boolean
+        
+        bVersionNumberFound = False
+        bAuthorsFound = False
+        
+        iFilenum = VBA.FreeFile
+        Open sFilePath For Input As #iFilenum
+        
+        ' Read data one line at a time
+        While Not VBA.EOF(iFilenum)
+            Line Input #iFilenum, s
+            
+            m_uploaded_changelog_md = m_uploaded_changelog_md & s & VBA.vbNewLine
+            
+            ' Try to extract version number
+            If Not bVersionNumberFound Then
+                If VBA.Left(s, 4) = "## v" Then
+                    sVersionNumber = VBA.Replace(s, "## v", "")
+                    bVersionNumberFound = True
+                End If
+            End If
+            
+            ' Try to extract authors
+            If Not bAuthorsFound Then
+                If VBA.Left(s, 12) = "**Authors:**" Then
+                    sAuthors = VBA.Replace(s, "**Authors:**", "")
+                    bAuthorsFound = True
+                End If
+            End If
+        Wend
+        
+        Close #iFilenum
+    End If
     
     ' Build JSON containing the desired information
     Dim sChangelogInfoJson As String
     sChangelogInfoJson = "{" _
-                            & """versionNumber"" : """ & "1.2.3" & """," _
-                            & """authors"" : """ & "FER" & """" _
+                            & """versionNumber"" : """ & sVersionNumber & """," _
+                            & """authors"" : """ & sAuthors & """" _
                         & "}"
     
     OpenExistingChangelog = sChangelogInfoJson
@@ -1419,7 +1467,9 @@ End Function
 ' ##SUMMARY Creates the README.md file needed for add-ons. Will replace placeholders with data from the specified oReadmeInfo JSON.
 Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As String) As Boolean
     On Error GoTo ErrorHandler
-
+    
+    '##TODO: If there is an uploaded CHANGELOG.md then use that instead of the template and add new info to it.
+    
     Dim sChangelog As String
     sChangelog = ReadAllTextFromFile(Application.WebFolder & "apps\LIPPackageBuilder\templates\CHANGELOG.md")
     
@@ -1459,4 +1509,30 @@ Public Function GetVersion() As String
 ErrorHandler:
     Call UI.ShowError("LIPPackageBuilder.GetVersion")
 End Function
+
+
+
+' ##SUMMARY Opens a file dialog where the user can select a file.
+' Returns the full path to the selected file or an empty string if no file was selected.
+Private Function SelectFile(sCaption As String, sFilter As String) As String
+    On Error GoTo ErrorHandler
+
+    Dim o As New LCO.FileOpenDialog
+    o.AllowMultiSelect = False
+    o.Caption = sCaption
+    o.Filter = sFilter
+    o.DefaultFolder = LCO.GetDesktopPath
+    
+    ' Set return value
+    If o.show = VBA.vbOK Then
+        SelectFile = o.FileName
+    Else
+        SelectFile = ""
+    End If
+
+    Exit Function
+ErrorHandler:
+    Call UI.ShowError("LIPPackageBuilder.SelectFile")
+End Function
+
 
