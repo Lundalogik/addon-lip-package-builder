@@ -5,7 +5,7 @@
 
 **Authors:** Fredrik Eriksson, Lime
 
-**Comment:**
+**Comments:**
 
 * Restructured files according to add-on requirements.
 * Output as complete add-on or as zip only.
@@ -17,11 +17,15 @@
 
 **Authors:** Pawel Demczuk, Lime
 
+**Comments:**
+
 
 ## v0.3.0
 **Released:** 2016-12-06
 
 **Authors:** Pawel Demczuk, Lime
+
+**Comments:**
 
 * Added Localization support.
 
@@ -31,6 +35,8 @@
 
 **Authors:** Pawel Demczuk, Lime
 
+**Comments:**
+
 * Added VBA support.
 
 
@@ -38,3 +44,7 @@
 **Released:** 2016-01-26
 
 **Authors:** Jonatan Tegen, Fredrik Eriksson, Pawel Demczuk, Lime
+
+**Comments:**
+
+* A first version.
