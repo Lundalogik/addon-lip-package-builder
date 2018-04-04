@@ -361,31 +361,33 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
         Exit Sub
     End If
     
-    ' Save all files under the add-on folder for easy access if it is a new add-on
-    Dim sAddonFolderPath As String
-    sAddonFolderPath = sTargetPath & "\add-on"
-    
-    ' Copy generated lip files from the temporary folder to the add-on\lip folder
-    Call CreateFolder(sAddonFolderPath, "lip")
-    If Not CopyFolder(sTemporaryPackageFolderPath, sAddonFolderPath & "\lip") Then
-        Call Application.MessageBox("An error occurred: Could not copy add-on files from temporary folder to target folder.", VBA.vbCritical + VBA.vbOKOnly)
-        Exit Sub
-    End If
-    
-    ' Create other mandatory files for add-ons
-    If Not SaveTextToDisk(VBA.StrConv(DecodeBase64(sMetaData), VBA.vbUnicode), sAddonFolderPath & "\resources", "metadata.json") Then
-        Call Application.MessageBox("An error occurred: Could not create metadata.json.", VBA.vbCritical + VBA.vbOKOnly)
-        Exit Sub
-    End If
-    
-    If Not CreateReadmeMd(oReadmeInfo, sAddonFolderPath) Then
-        Call Application.MessageBox("An error occurred: Could not create README.md.", VBA.vbCritical + VBA.vbOKOnly)
-        Exit Sub
-    End If
-    
-    If Not CreateChangelogMd(oChangelogInfo, sAddonFolderPath) Then
-        Call Application.MessageBox("An error occurred: Could not create CHANGELOG.md.", VBA.vbCritical + VBA.vbOKOnly)
-        Exit Sub
+    If isAddon Then
+        ' Save all files under the add-on folder for easy access if it is a new add-on
+        Dim sAddonFolderPath As String
+        sAddonFolderPath = sTargetPath & "\add-on"
+        
+        ' Copy generated lip files from the temporary folder to the add-on\lip folder
+        Call CreateFolder(sAddonFolderPath, "lip")
+        If Not CopyFolder(sTemporaryPackageFolderPath, sAddonFolderPath & "\lip") Then
+            Call Application.MessageBox("An error occurred: Could not copy add-on files from temporary folder to target folder.", VBA.vbCritical + VBA.vbOKOnly)
+            Exit Sub
+        End If
+        
+        ' Create other mandatory files for add-ons
+        If Not SaveTextToDisk(VBA.StrConv(DecodeBase64(sMetaData), VBA.vbUnicode), sAddonFolderPath & "\resources", "metadata.json") Then
+            Call Application.MessageBox("An error occurred: Could not create metadata.json.", VBA.vbCritical + VBA.vbOKOnly)
+            Exit Sub
+        End If
+        
+        If Not CreateReadmeMd(oReadmeInfo, sAddonFolderPath) Then
+            Call Application.MessageBox("An error occurred: Could not create README.md.", VBA.vbCritical + VBA.vbOKOnly)
+            Exit Sub
+        End If
+        
+        If Not CreateChangelogMd(oChangelogInfo, sAddonFolderPath) Then
+            Call Application.MessageBox("An error occurred: Could not create CHANGELOG.md.", VBA.vbCritical + VBA.vbOKOnly)
+            Exit Sub
+        End If
     End If
     
     ' Notify the user that all went well
@@ -1468,27 +1470,31 @@ End Function
 Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As String) As Boolean
     On Error GoTo ErrorHandler
     
-    '##TODO: If there is an uploaded CHANGELOG.md then use that instead of the template and add new info to it.
-    
-    Dim sChangelog As String
-    sChangelog = ReadAllTextFromFile(Application.WebFolder & "apps\LIPPackageBuilder\templates\CHANGELOG.md")
-    
-    sChangelog = VBA.Replace(sChangelog, "<*displayName*>", oChangelogInfo.Item("displayName"))
-    sChangelog = VBA.Replace(sChangelog, "<*versionNumber*>", oChangelogInfo.Item("versionNumber"))
-    sChangelog = VBA.Replace(sChangelog, "<*date*>", oChangelogInfo.Item("date"))
-    sChangelog = VBA.Replace(sChangelog, "<*authors*>", oChangelogInfo.Item("authors"))
-    
-    ' Add an * at the beginning of the version comments if not already there.
-    Dim comments As String
-    comments = oChangelogInfo.Item("versionComment")
-    If comments <> "" Then
-        If Not VBA.Left(comments, 2) = "* " Then
-            comments = "* " & comments
+    If m_uploaded_changelog_md <> "" Then
+        '##TODO: If there is an uploaded CHANGELOG.md then use that instead of the template and add new info to it.
+        Call Lime.MessageBox("Adding to an existing CHANGELOG is not implemented yet", VBA.vbOKOnly + VBA.vbInformation)
+    Else
+        ' Create new CHANGELOG file
+        Dim sChangelog As String
+        sChangelog = ReadAllTextFromFile(Application.WebFolder & "apps\LIPPackageBuilder\templates\CHANGELOG.md")
+        
+        sChangelog = VBA.Replace(sChangelog, "<*displayName*>", oChangelogInfo.Item("displayName"))
+        sChangelog = VBA.Replace(sChangelog, "<*versionNumber*>", oChangelogInfo.Item("versionNumber"))
+        sChangelog = VBA.Replace(sChangelog, "<*date*>", oChangelogInfo.Item("date"))
+        sChangelog = VBA.Replace(sChangelog, "<*authors*>", oChangelogInfo.Item("authors"))
+        
+        ' Add an * at the beginning of the version comments if not already there.
+        Dim comments As String
+        comments = oChangelogInfo.Item("versionComment")
+        If comments <> "" Then
+            If Not VBA.Left(comments, 2) = "* " Then
+                comments = "* " & comments
+            End If
         End If
-    End If
-    sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", comments)
-    
-    Call SaveTextToDisk(sChangelog, sPath, "CHANGELOG.md")
+        sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", comments)
+        
+        Call SaveTextToDisk(sChangelog, sPath, "CHANGELOG.md")      ' ##TODO: This can be moved outside the Else later.
+    End
     
     CreateChangelogMd = True
 
