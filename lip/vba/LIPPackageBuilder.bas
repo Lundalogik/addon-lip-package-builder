@@ -1494,7 +1494,7 @@ Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As Stri
         sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", comments)
         
         Call SaveTextToDisk(sChangelog, sPath, "CHANGELOG.md")      ' ##TODO: This can be moved outside the Else later.
-    End
+    End If
     
     CreateChangelogMd = True
 
