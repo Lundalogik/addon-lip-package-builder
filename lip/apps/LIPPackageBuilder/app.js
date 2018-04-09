@@ -26,7 +26,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         // Set some GUI texts and settings
         $('title').html('LIP Package Builder');
         vm.lipPackageBuilderVersion = ko.observable(lbs.common.executeVba('LIPPackageBuilder.GetVersion'));
-        vm.isAddon = ko.observable(true);
+        vm.isAddon = ko.observable(false);
         vm.inputLabelUniqueName = ko.computed(function() {
             if (vm.isAddon()) {
                 return 'Unique Name of Add-on';
