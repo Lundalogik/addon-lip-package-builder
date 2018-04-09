@@ -297,9 +297,9 @@ packagebuilder = {
                 // Build changelog json from information added by user
                 var changelog_md = {
                     "displayName": vm.displayName(),
-                    "authors": vm.authors(),
+                    "authors": vm.version().authors(),
                     "versionNumber": vm.version().fullNumber(),
-                    "versionComments": vm.versionComments(),
+                    "versionComments": vm.version().comments(),
                     "date": moment().format("YYYY-MM-DD")
                 };
                 

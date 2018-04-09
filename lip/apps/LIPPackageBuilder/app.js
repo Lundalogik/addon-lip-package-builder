@@ -49,7 +49,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         // Info regarding opened existing CHANGELOG.md
         vm.existingChangelogVersion = new Version('');
-        vm.existingChangelogAuthors = ko.observable('');
         
         vm.existingChangelogVersionText = ko.computed(function() {
             if (vm.changelog_mdUploaded()) {
@@ -62,7 +61,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.existingChangelogAuthorsText = ko.computed(function() {
             if (vm.changelog_mdUploaded()) {
-                return 'The author(s) of the latest version in the uploaded changelog is: ' + vm.existingChangelogAuthors() + '.';
+                return 'The author(s) of the latest version in the uploaded changelog is: ' + vm.existingChangelogVersion.authors() + '.';
             }
             else {
                 return '';
@@ -70,7 +69,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         }, this);
 
         vm.setAuthorToUploaded = function() {
-            vm.authors(vm.existingChangelogAuthors());
+            vm.version().authors(vm.existingChangelogVersion.authors());
         }
 
         // Called from GUI on click on helper buttons for setting version according to uploaded CHANGELOG.md.
@@ -479,9 +478,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         // Data from details
         vm.uniqueName = ko.observable("");
         vm.displayName = ko.observable("");
-        vm.authors = ko.observable("");             // ##TODO: Should be a part of the Version object
         vm.version = ko.observable(new Version(''));
-        vm.versionComments = ko.observable("");      // ##TODO: Should be a part of the Version object
         vm.description = ko.observable("");
         
         // Load localization data

@@ -479,6 +479,9 @@ var Actionpad = function(a) {
 
 var Version = function(str) {
     var self = this;
+
+    self.authors = ko.observable("");
+    self.comments = ko.observable("");
     
     // Set default values
     self.major = ko.observable(0);

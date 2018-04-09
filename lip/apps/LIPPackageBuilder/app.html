@@ -75,7 +75,7 @@
 				</div>
 				<div class="form-group col-md-10">
 					<label for="inputAuthors">Author(s)</label>
-					<input type="text" class="form-control" id="inputAuthors" placeholder="full name(s), Lime" data-bind="value: authors, valueUpdate: 'afterkeydown'" />
+					<input type="text" class="form-control" id="inputAuthors" placeholder="full name(s), Lime" data-bind="value: version().authors, valueUpdate: 'afterkeydown'" />
 				</div>
 				<div class="form-group col-md-12">
 					<label for="inputVersionComments">Comments</label>
@@ -83,7 +83,7 @@
 * Added upgrade instructions to README.
 * Added GDPR information to README.
 * Added prefix unique for this add-on to CSS classes.
-* Added preparation instructions for customer's IT to README." data-bind="value: versionComments, valueUpdate: 'afterkeydown'"></textarea>
+* Added preparation instructions for customer's IT to README." data-bind="value: version().comments, valueUpdate: 'afterkeydown'"></textarea>
 				</div>
 			</div>
 
