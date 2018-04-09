@@ -317,18 +317,6 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
         Exit Sub
     End If
     
-    ' ##TODO: Remove if not needed anymore!
-    ' Rename Temporary folder to package name
-'    Dim sNewFolderPath As String
-'    If bResult Then
-'        sNewFolderPath = RenameTemporaryFolder(oMetaData.Item("uniqueName"), sTemporaryPackageFolderPath)
-'    End If
-'
-'    If sNewFolderPath = "" Then
-'        Call Application.MessageBox("An error occurred: Could not rename the temporary folder.", VBA.vbCritical + VBA.vbOKOnly)
-'        Exit Sub
-'    End If
-
     ' Let the user select a folder to place the generated files in
     Dim sSelectedPath As String
     sSelectedPath = GetFolder("Select a folder to save the generated files in.")
@@ -340,8 +328,6 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     ' Create folder where to put all generated files (zip file and subfolder for all add-on files).
     Dim sTargetPath As String
     sTargetPath = CreateFolder(sSelectedPath, oMetaData.Item("uniqueName") & "_" & GetCleanTimestamp)
-    
-    
     
     ' Create zip for LIP Package
     Dim sZipFileFullPath As String
