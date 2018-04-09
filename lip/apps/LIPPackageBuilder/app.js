@@ -428,8 +428,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             return window.atob(str);
         }
 
-
-
         // Load database structure
         try{
             var db = {};
@@ -462,9 +460,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.descriptives(ko.utils.arrayMap(json.data.database.descriptives.descriptive, function(d){
                 return new Descriptive(d);
             }));
-
-
-
 
             var sqlDefinitions =  {};
             var def;
