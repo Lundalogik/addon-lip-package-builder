@@ -481,7 +481,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.displayName = ko.observable("");
         vm.authors = ko.observable("");             // ##TODO: Should be a part of the Version object
         vm.version = ko.observable(new Version(''));
-        vm.versionComment = ko.observable("");      // ##TODO: Should be a part of the Version object
+        vm.versionComments = ko.observable("");      // ##TODO: Should be a part of the Version object
         vm.description = ko.observable("");
         
         // Load localization data

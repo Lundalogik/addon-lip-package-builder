@@ -299,7 +299,7 @@ packagebuilder = {
                     "displayName": vm.displayName(),
                     "authors": vm.authors(),
                     "versionNumber": vm.version().fullNumber(),
-                    "versionComment": vm.versionComment(),
+                    "versionComments": vm.versionComments(),
                     "date": moment().format("YYYY-MM-DD")
                 };
                 

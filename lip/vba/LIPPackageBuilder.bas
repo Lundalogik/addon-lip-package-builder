@@ -11,6 +11,10 @@ Private m_uploaded_changelog_md As String
 Public Sub OpenPackageBuilder()
     On Error GoTo ErrorHandler
     
+    ' Reset global variables
+    m_uploaded_changelog_md = ""
+    
+    ' Open HTML window
     Dim oDialog As New Lime.Dialog
     Dim idpersons As String
     Dim oItem As Lime.ExplorerItem
@@ -1281,6 +1285,10 @@ Public Function OpenExistingChangelog() As String
         While Not VBA.EOF(iFilenum)
             Line Input #iFilenum, s
             
+            ' Insert placeholder for potential new section when creating package later.
+            If VBA.Left(s, 11) = "# Changelog" Then
+                s = s & VBA.vbNewLine & VBA.vbNewLine & "<*newVersionInfo*>"
+            End If
             m_uploaded_changelog_md = m_uploaded_changelog_md & s & VBA.vbNewLine
             
             ' Try to extract version number
@@ -1452,35 +1460,41 @@ ErrorHandler:
 End Function
 
 
-' ##SUMMARY Creates the README.md file needed for add-ons. Will replace placeholders with data from the specified oReadmeInfo JSON.
+' ##SUMMARY Either creates a new CHANGELOG.md file needed for add-ons or it adds to an existing uploaded CHANGELOG.md.
+' Will replace placeholders with data from the specified oReadmeInfo JSON.
 Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As String) As Boolean
     On Error GoTo ErrorHandler
     
-    If m_uploaded_changelog_md <> "" Then
-        '##TODO: If there is an uploaded CHANGELOG.md then use that instead of the template and add new info to it.
-        Call Lime.MessageBox("Adding to an existing CHANGELOG is not implemented yet", VBA.vbOKOnly + VBA.vbInformation)
-    Else
-        ' Create new CHANGELOG file
-        Dim sChangelog As String
-        sChangelog = ReadAllTextFromFile(Application.WebFolder & "apps\LIPPackageBuilder\templates\CHANGELOG.md")
-        
-        sChangelog = VBA.Replace(sChangelog, "<*displayName*>", oChangelogInfo.Item("displayName"))
-        sChangelog = VBA.Replace(sChangelog, "<*versionNumber*>", oChangelogInfo.Item("versionNumber"))
-        sChangelog = VBA.Replace(sChangelog, "<*date*>", oChangelogInfo.Item("date"))
-        sChangelog = VBA.Replace(sChangelog, "<*authors*>", oChangelogInfo.Item("authors"))
-        
-        ' Add an * at the beginning of the version comments if not already there.
-        Dim comments As String
-        comments = oChangelogInfo.Item("versionComment")
-        If comments <> "" Then
-            If Not VBA.Left(comments, 2) = "* " Then
-                comments = "* " & comments
-            End If
+    ' Build string with info about the new version
+    Dim sVersionInfo As String
+    sVersionInfo = ReadAllTextFromFile(Application.WebFolder & "apps\LIPPackageBuilder\templates\CHANGELOG_versioninfo.md")
+    
+    sVersionInfo = VBA.Replace(sVersionInfo, "<*versionNumber*>", oChangelogInfo.Item("versionNumber"))
+    sVersionInfo = VBA.Replace(sVersionInfo, "<*date*>", oChangelogInfo.Item("date"))
+    sVersionInfo = VBA.Replace(sVersionInfo, "<*authors*>", oChangelogInfo.Item("authors"))
+    
+    ' Add an * at the beginning of the version comments if not already there.
+    Dim comments As String
+    comments = oChangelogInfo.Item("versionComments")
+    If comments <> "" Then
+        If Not VBA.Left(comments, 2) = "* " Then
+            comments = "* " & comments
         End If
-        sChangelog = VBA.Replace(sChangelog, "<*versionComment*>", comments)
-        
-        Call SaveTextToDisk(sChangelog, sPath, "CHANGELOG.md")      ' ##TODO: This can be moved outside the Else later.
     End If
+    sVersionInfo = VBA.Replace(sVersionInfo, "<*versionComments*>", comments)
+    
+    ' Build new or add to existing CHANGELOG.md
+    Dim sChangelog As String
+    
+    If m_uploaded_changelog_md <> "" Then
+        sChangelog = m_uploaded_changelog_md
+    Else
+        sChangelog = ReadAllTextFromFile(Application.WebFolder & "apps\LIPPackageBuilder\templates\CHANGELOG.md")
+        sChangelog = VBA.Replace(sChangelog, "<*displayName*>", oChangelogInfo.Item("displayName"))
+    End If
+    
+    sChangelog = VBA.Replace(sChangelog, "<*newVersionInfo*>", sVersionInfo)
+    Call SaveTextToDisk(sChangelog, sPath, "CHANGELOG.md")
     
     CreateChangelogMd = True
 
