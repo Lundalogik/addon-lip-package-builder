@@ -151,46 +151,41 @@ packagebuilder = {
             }
 
             //Check if field is existing in an relation
-            for (index = 0;index < packageRelationFields.length; index++){
+            for (index = 0;index < packageRelationFields.length; index++) {
                 var rf = packageRelationFields[index];
                 var j;
-                for (j = 0; j < packageRelations.length;j++){
+                for (j = 0; j < packageRelations.length;j++) {
                     var rel = packageRelations[j];
-                    if (rel.table1 + '.' + rel.field1 == rf.name || rel.table2 + '.' + rel.field2 == rf.name){
+                    if (rel.table1 + '.' + rel.field1 == rf.name || rel.table2 + '.' + rel.field2 == rf.name) {
                         rf.remove = 0;
                     }
                 }
             }
 
             //remove unpaired relationfields
-            $.each(packageRelationFields,function(i,relField){
-                if(relField.remove == 1){
-                    $.each(packageTables, function(j,packageTable){
-                        if(packageTable.name == relField.name.substring(0, relField.name.indexOf("."))){
+            $.each(packageRelationFields,function(i,relField) {
+                if(relField.remove == 1) {
+                    $.each(packageTables, function(j,packageTable) {
+                        if(packageTable.name == relField.name.substring(0, relField.name.indexOf("."))) {
                             var indexOfObjectToRemove;
                             //find the field to remove
-                            $.each(packageTable.fields, function(k, packageField){
-                                if (packageField.name == relField.name.substring(relField.name.indexOf(".") + 1)){
+                            $.each(packageTable.fields, function(k, packageField) {
+                                if (packageField.name == relField.name.substring(relField.name.indexOf(".") + 1)) {
                                     indexOfObjectToRemove = k;
                                 }
                             });
                             //remove field from package
-                            if(indexOfObjectToRemove >= 0){
+                            if(indexOfObjectToRemove >= 0) {
                                 packageTable.fields.splice(indexOfObjectToRemove,1);
                             }
                         }
-
-
-                });
-            }
+                    });
+                }
             });
 
-            $.each(vm.selectedSql(),function(i, sql){
+            $.each(vm.selectedSql(),function(i, sql) {
                 sqlObjects.push({"name": sql.name, "definition": vm.sqlDefinitions()[sql.name]})
             });
-
-
-
         }
         catch(e){
             alert(e);

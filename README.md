@@ -37,12 +37,21 @@ Some things that are not supported by the LIP installation of a zip file are exp
 * Table icons
 
 
-### Open Existing Package
-It is possible to open a previously created LIP zip file. The Package Builder will show which components that were part of that zip file. You can then add new or remove previously included components to create a new version of the package.
+### Open Existing Files
+
+#### LIP Package zip
+It is possible to open a previously created LIP zip file. The Package Builder will show which components that were part of that zip file. You can then add new or remove previously included components to create a new version of the package/add-on.
+
+#### CHANGELOG.md
+*Only when working with an add-on:* You can upload an existing CHANGELOG.md and then simply choose how to increment the version number and if you want to use the same author as for the last version. The versioning info written in the form will be inserted into a copy of the uploaded CHANGELOG.md file when the Package Builder generates the add-on files for you.
+
+#### metadata.json
+*Only when working with an add-on:* You can upload an existing metadata.json. The form will automatically be filled with data from the uploaded metadata.json.
+
 
 ### Possible Future Features
 
-* Selecting dependencies to other add-ons.
+* Select dependencies to other add-ons.
 * Select Lime Bootstrap apps to include.
 
 

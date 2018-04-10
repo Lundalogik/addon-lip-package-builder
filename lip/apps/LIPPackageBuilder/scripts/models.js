@@ -549,3 +549,23 @@ var Version = function(str) {
         owner: this
     });
 }
+
+var Metadata = function(data) {
+    var self = this;
+
+    if (!data) {
+        data = {
+            "uniqueName": '',
+            "displayName": '',
+            "description": '',
+            "cloudCompatible": false,
+            "tags": []
+        }
+    }
+
+    self.uniqueName = data.uniqueName;
+    self.displayName = data.displayName;
+    self.description = data.description;
+    self.cloudCompatible = data.cloudCompatible;            //##TODO: Add this to GUI
+    self.tags = data.tags                                   //##TODO: Add this to GUI
+}

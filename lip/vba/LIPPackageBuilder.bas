@@ -1327,6 +1327,37 @@ ErrorHandler:
 End Function
 
 
+' ##SUMMARY Called from javascript.
+' Lets the user select an existing metadata.json file.
+' If the user cancels the file dialog then an empty JSON object will be returned.
+Public Function OpenExistingMetadata() As String
+    On Error GoTo ErrorHandler
+    
+    ' Let the user select a file
+    Dim sFilePath As String
+    sFilePath = SelectFile("Select metadata.json file", "JSON files (*.json) | *.json")
+    
+    ' Check if user cancelled
+    If sFilePath = "" Then
+        OpenExistingMetadata = "{}"
+        Exit Function
+    End If
+    
+    ' Build JSON object to return
+    If LCO.ExtractFileExtension(sFilePath) = "json" Then
+        OpenExistingMetadata = ReadAllTextFromFile(sFilePath)
+        Exit Function
+    End If
+    
+    OpenExistingMetadata = "{}"
+
+    Exit Function
+ErrorHandler:
+    OpenExistingMetadata = "{}"
+    Call UI.ShowError("LIPPackageBuilder.OpenExistingMetadata")
+End Function
+
+
 Private Sub UnZip(strTargetPath As String, Fname As Variant)
     Dim oApp As Object, FSOobj As Object
     Dim FileNameFolder As Variant

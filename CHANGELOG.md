@@ -9,7 +9,7 @@
 
 * Restructured files according to add-on requirements.
 * Output as complete add-on or as zip only.
-* 
+* Possibility to open existing metadata.json and/or CHANGELOG.md.
 
 
 ## v1.1.0

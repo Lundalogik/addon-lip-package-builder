@@ -13,7 +13,8 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                     'scripts/enums.js',
                     'scripts/packagebuilder.js',
                     'scripts/existing_package_loader.js',
-                    'scripts/app.changelogloader.js'
+                    'scripts/app.changelogloader.js',
+                    'scripts/app.metadataloader.js'
                 ], // <= External libs for your apps. Must be a file
                 styles: ['app.css'], // <= Load styling for the app.
                 libs: ['json2xml.js'] // <= Allready included libs, put not loaded per default. Example json2xml.js
@@ -46,6 +47,9 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                 return 'Information entered below will be inserted into a brand new CHANGELOG.md file.';
             }
         }, this);
+
+        // Info regarding opened existing metadata.json. (Not really needed but may be good for further development of the GUI)
+        vm.existingMetadata = {};
 
         // Info regarding opened existing CHANGELOG.md
         vm.existingChangelogVersion = new Version('');
@@ -244,11 +248,11 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         
       
         //Select all tables that exist in the opened package
-        vm.openExistingPackage = function(){            
+        vm.openExistingPackage = function() {            
             try
             {
                 var b64Json = window.external.run('LIPPackageBuilder.OpenExistingPackage');
-                if(b64Json != ""){
+                if(b64Json != "") {
                     b64Json = b64Json.replace(/\r?\n|\r/g,"");
                     b64Json = b64_to_utf8(b64Json);
                     
@@ -258,14 +262,13 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
             }
             catch(e){alert("Error opening existing package:\n" + e);}
-            if (vm.existingPackage){
+            if (vm.existingPackage) {
                 parseExistingPackage();
             }
         }
 
         vm.openExistingMetadataJson = function() {
-            //##TODO!
-            alert("Not implemented");
+            app.metadataloader.openExistingMetadata(vm);
         }
 
         // Called upon button click in GUI
@@ -273,7 +276,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             app.changelogloader.openExistingChangelog(vm);
         }
 
-        vm.downloadExistingPackage = function(){
+        vm.downloadExistingPackage = function() {
             alert("Not implemented");
         }
 
