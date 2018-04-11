@@ -7,14 +7,13 @@ Through an easy-to-use GUI you can select your components for the LIP package. C
 
 ## Requirements
 
-* LIP is installed in your Lime CRM application.
 * Lime Bootstrap framework.
 
 
 ## Features
 The output when creating a new package is a folder containing two things:
 
-1. A folder called *add-on* that will contain everything you need to put in the GitHub repository if you are creating a new add-on. This follows the requirements for Community Add-ons.
+1. A folder called *add-on* that will contain everything you need to put in the GitHub repository if you are creating a new add-on. This follows the requirements for Community Add-ons. This folder is only generated if you select "Add-on" in the Package Builder GUI on the Details tab.
 2. A LIP zip file of the content of the folder *add-on\lip*. This is the zip file that you should use to install the package in another Lime CRM application. The file package.json in the zip file follows the structure described in the [LIP repository](https://github.com/Lundalogik/lip).
 
 
@@ -82,4 +81,4 @@ It is possible to open a previously created LIP zip file. The Package Builder wi
 
 
 ## Troubleshooting
-See issues under the GitHub repository. If you cannot find an answer there, create a new issue and describe your problem there.
+See [issues](https://github.com/Lundalogik/addon-lip-package-builder/issues) under the GitHub repository. If you cannot find an answer there, create a new issue and describe your problem there.
