@@ -48,8 +48,6 @@ Public Function LoadDataStructure(strProcedureName As String) As String
     sXml = XMLEncodeBase64(sXml)
     
     LoadDataStructure = sXml
-    'MsgBox sXml
-    'MsgBox StrConv(DecodeBase64(sXml), vbUnicode)
     
     Exit Function
 ErrorHandler:
