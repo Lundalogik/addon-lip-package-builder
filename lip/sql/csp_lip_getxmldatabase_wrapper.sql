@@ -1,16 +1,14 @@
-/****** Object:  StoredProcedure [dbo].[csp_lip_getxmldatabase_wrapper]    Script Date: 2017-01-03 10:26:55 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-
--- Written by: JKA, PDE and FER, Lundalogik AB
+IF EXISTS (SELECT so.[name] FROM sysobjects so WHERE so.[name] = 'csp_lip_getxmldatabase_wrapper' AND UPPER(so.[type]) = 'P')
+   DROP PROCEDURE [csp_lip_getxmldatabase_wrapper]
+GO
+-- Written by: Fredrik Eriksson, Jonatan Tegen and Pawel Demczuk
 -- Created: 2016-01-25
 
 -- Called by the LIP Package Builder. Returns relevant XML structure for the database.
-IF EXISTS (SELECT name FROM sysobjects WHERE name = 'csp_lip_getxmldatabase_wrapper' AND UPPER(type) = 'P')
-   DROP PROCEDURE [csp_lip_getxmldatabase_wrapper]
-GO
 CREATE PROCEDURE [dbo].[csp_lip_getxmldatabase_wrapper]
 	@@lang NVARCHAR(5)
 	, @@idcoworker INT = NULL
@@ -110,3 +108,18 @@ BEGIN
 	-- Return data to client
 	SELECT @subxml
 END
+
+GO
+
+-- Always execute these during installation of procedures to be reached from VBA
+IF EXISTS (SELECT so.[name] FROM [sysobjects] so WHERE so.[name] = 'lsp_setdatabasetimestamp' AND UPPER(so.[type]) = 'P')
+BEGIN
+	EXEC lsp_setdatabasetimestamp
+END
+
+IF EXISTS (SELECT so.[name] FROM [sysobjects] so WHERE so.[name] = 'lsp_refreshldc' AND UPPER(so.[type]) = 'P')
+BEGIN
+	EXEC lsp_refreshldc
+END
+
+GO

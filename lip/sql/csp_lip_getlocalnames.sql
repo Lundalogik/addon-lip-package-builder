@@ -1,4 +1,3 @@
-/****** Object:  StoredProcedure [dbo].[csp_lip_getlocalnames]    Script Date: 2016-05-17 07:27:22 ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -10,7 +9,7 @@ GO
 -- Returns the local names for all fields and tables as an xml.
 
 --##TODO: Lägg tillbaka validationtexts, comments och descriptions. XML:en blir dock för stor om man har med dem.
-IF EXISTS (SELECT name FROM sysobjects WHERE name = 'csp_lip_getlocalnames' AND UPPER(type) = 'P')
+IF EXISTS (SELECT so.[name] FROM [sysobjects] so WHERE so.[name] = 'csp_lip_getlocalnames' AND UPPER(so.[type]) = 'P')
    DROP PROCEDURE [csp_lip_getlocalnames]
 GO
 CREATE PROCEDURE [dbo].[csp_lip_getlocalnames]
@@ -404,3 +403,18 @@ BEGIN
 	EXEC sp_executesql @sql
 	
 END
+
+GO
+
+-- Always execute these during installation of procedures to be reached from VBA
+IF EXISTS (SELECT so.[name] FROM [sysobjects] so WHERE so.[name] = 'lsp_setdatabasetimestamp' AND UPPER(so.[type]) = 'P')
+BEGIN
+	EXEC lsp_setdatabasetimestamp
+END
+
+IF EXISTS (SELECT so.[name] FROM [sysobjects] so WHERE so.[name] = 'lsp_refreshldc' AND UPPER(so.[type]) = 'P')
+BEGIN
+	EXEC lsp_refreshldc
+END
+
+GO
