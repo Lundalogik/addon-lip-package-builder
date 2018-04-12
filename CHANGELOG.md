@@ -17,6 +17,7 @@
 * Improved README.
 * Cancelling when selecting a folder to store generated files in no longer causes an error.
 * Subs/Functions in VBA that do not have to be Public now made Private.
+* The file select dialog causing an error in rare cases on some computers now fixed.
 
 
 ## v1.1.0
