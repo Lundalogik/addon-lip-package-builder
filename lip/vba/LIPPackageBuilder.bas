@@ -1558,7 +1558,6 @@ Private Function SelectFile(sCaption As String, sFilter As String) As String
     o.AllowMultiSelect = False
     o.Caption = sCaption
     o.Filter = sFilter
-    o.DefaultFolder = LCO.GetDesktopPath
     
     ' Set return value
     If o.show = VBA.vbOK Then
