@@ -18,6 +18,7 @@
 * Cancelling when selecting a folder to store generated files in no longer causes an error.
 * Subs/Functions in VBA that do not have to be Public now made Private.
 * The file select dialog causing an error in rare cases on some computers now fixed.
+* No need to manually execute any lsp:s after installing the SQL procedures needed.
 
 
 ## v1.1.0
