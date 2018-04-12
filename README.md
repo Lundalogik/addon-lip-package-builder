@@ -56,14 +56,17 @@ It is possible to open a previously created LIP zip file. The Package Builder wi
 
 ## Installation
 
-1. Add the SQL procedures to the database.
-2. Run `EXEC lsp_setdatabasetimestamp` and `EXEC lsp_refreshldc` on the database.
-3. Restart the LDC.
-4. Restart the Lime CRM Desktop Client.
-5. Enter the VBA editor and run `lip.Install("LIPPackageBuilder")` in the immediate window.
-6. Compile and save VBA.
-7. Publish Actionpads.
-8. Run `LIPPackageBuilder.OpenPackageBuilder` in the immediate window in the VBA editor to start the Package Builder.
+1. Get the LIP zip file for the latest release from [GitHub](https://github.com/Lundalogik/addon-lip-package-builder/releases).
+2. Unblock the zip file. Right-click, properties and tick the box "Unblock" at the bottom. Then click the OK button.
+3. Start the Lime CRM Desktop Client.
+4. Enter the VBA editor and run `lip.InstallFromZip` in the immediate window. Select your downloaded zip file.
+5. Compile and save VBA.
+6. Add the SQL procedures to the database.
+7. Copy the folder apps\LIPPackageBuilder from the zip file into Actionpads\apps.
+8. Publish Actionpads.
+9. Restart the LDC.
+10. Restart the Lime CRM desktop client.
+11. Run `LIPPackageBuilder.OpenPackageBuilder` in the immediate window in the VBA editor to start the Package Builder.
 
 
 ## How to use
