@@ -7,10 +7,15 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         The variabels specified in "config:{}", when you initalize your app are available in in the object "appConfig".
     */
     self.config =  function(appConfig){
-            this.yourPropertyDefinedWhenTheAppIsUsed = appConfig.yourProperty;
             this.dataSources = [];
             this.resources = {
-                scripts: ['model.js', 'enums.js', 'packagebuilder.js', 'existing_package_loader.js'], // <= External libs for your apps. Must be a file
+                scripts: ['scripts/models.js',
+                    'scripts/enums.js',
+                    'scripts/packagebuilder.js',
+                    'scripts/existing_package_loader.js',
+                    'scripts/app.changelogloader.js',
+                    'scripts/app.metadataloader.js'
+                ], // <= External libs for your apps. Must be a file
                 styles: ['app.css'], // <= Load styling for the app.
                 libs: ['json2xml.js'] // <= Allready included libs, put not loaded per default. Example json2xml.js
             };
@@ -19,19 +24,82 @@ lbs.apploader.register('LIPPackageBuilder', function () {
     //initialize
     self.initialize = function (node, vm) {
 
-        $('title').html('LIP Package builder');
+        // Set some GUI texts and settings
+        $('title').html('LIP Package Builder');
+        vm.lipPackageBuilderVersion = ko.observable(lbs.common.executeVba('LIPPackageBuilder.GetVersion'));
+        vm.isAddon = ko.observable(false);
+        vm.inputLabelUniqueName = ko.computed(function() {
+            if (vm.isAddon()) {
+                return 'Unique Name of Add-on';
+            }
+            else {
+                return 'Unique Name of Package';
+            }
+        }, this);
+
+        vm.changelog_mdUploaded = ko.observable(false);
+        vm.metadata_jsonUploaded = ko.observable(false);
+        vm.versioningExplanation = ko.computed(function() {
+            if (vm.changelog_mdUploaded()) {
+                return 'Information entered below will be added to the uploaded CHANGELOG.md file.';
+            }
+            else {
+                return 'Information entered below will be inserted into a brand new CHANGELOG.md file.';
+            }
+        }, this);
+
+        // Info regarding opened existing metadata.json. (Not really needed but may be good for further development of the GUI)
+        vm.existingMetadata = {};
+
+        // Info regarding opened existing CHANGELOG.md
+        vm.existingChangelogVersion = new Version('');
+        
+        vm.existingChangelogVersionText = ko.computed(function() {
+            if (vm.changelog_mdUploaded()) {
+                return 'The latest version in the uploaded changelog is: ' + vm.existingChangelogVersion.fullNumber() + '.';
+            }
+            else {
+                return '';
+            }
+        }, this);
+
+        vm.existingChangelogAuthorsText = ko.computed(function() {
+            if (vm.changelog_mdUploaded()) {
+                return 'The author(s) of the latest version in the uploaded changelog is: ' + vm.existingChangelogVersion.authors() + '.';
+            }
+            else {
+                return '';
+            }
+        }, this);
+
+        vm.setAuthorToUploaded = function() {
+            vm.version().authors(vm.existingChangelogVersion.authors());
+        }
+
+        // Called from GUI on click on helper buttons for setting version according to uploaded CHANGELOG.md.
+        vm.setVersion = function(additions) {
+            if (additions === 'breakingchanges' || additions === 'newfeatures' || additions === 'patches') {
+                var v = new Version(vm.existingChangelogVersion.fullNumber());                
+                if (additions === 'breakingchanges') {
+                    v.increaseMajor();
+                }
+                else if (additions === 'newfeatures') {
+                    v.increaseMinor();
+                }
+                else if (additions === 'patches') {
+                    v.increasePatch();
+                }
+                vm.version(v);
+            }
+        }
 
         enums.initialize(vm);
         packagebuilder.initialize(vm);
-
-        vm.appversion = ko.observable("0.0");
 
         vm.lastSelectedField = ko.observable({});
 
         // Checkbox to select all tables
         vm.selectTables = ko.observable(false);
-
-
 
         vm.selectTables.subscribe(function(newValue){
             ko.utils.arrayForEach(vm.filteredTables(),function(table){
@@ -66,7 +134,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             });
         });
 
-        //Checkbox to select all Localizations and functions
+        //Checkbox to select all Localizations
         vm.selectAllLocalizations = ko.observable(false);
 
         vm.selectAllLocalizations.subscribe(function(newValue){
@@ -75,18 +143,16 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             });
         });
 
-        vm.getVersion = function(){
-          try{
-              vm.appversion(lbs.common.executeVba('LIPPackageBuilder.CheckVersion'));
-            }
-            catch(e){
-              vm.appversion("N/A");
-            }
-        };
+        // Checkbox to select all Actionpads
+        vm.selectAllActionpads = ko.observable(false);
 
-        vm.getVersion();
+        vm.selectAllActionpads.subscribe(function(newValue) {
+            ko.utils.arrayForEach(vm.filteredActionpads(),function(a) {
+                a.checked(newValue);
+            });
+        });
 
-        vm.getVbaComponents = function(){
+        vm.getVbaComponents = function() {
             try{
                 var components = lbs.common.executeVba('LIPPackageBuilder.GetVBAComponents');
                 components = $.parseJSON(components);
@@ -105,9 +171,31 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.componentFilter("");
             vm.filteredComponents(vm.vbaComponents());
             vm.showComponents(true);
-        }
+        };
 
-        vm.getLocalizations = function(){
+        vm.getActionpads = function() {
+            try {
+                var actionpads = lbs.common.executeVba('LIPPackageBuilder.GetAvailableActionpads');
+                actionpads = $.parseJSON(actionpads);
+
+                vm.actionpads(ko.utils.arrayMap(actionpads, function(a) {
+                    return new Actionpad(a);
+                }));
+
+                vm.actionpads.sort(function(left, right) {
+                    return left.tableName === right.tableName ? 0 : (left.tableName < right.tableName ? -1 : 1);
+                });
+            }
+            catch (e) {
+                alert(e);
+            }
+
+            vm.actionpadsFilter("");
+            vm.filteredActionpads(vm.actionpads());
+            vm.showActionpads(true);
+        };
+
+        vm.getLocalizations = function() {
             try{
                 var xmlData = {};
                 lbs.loader.loadDataSource(
@@ -115,7 +203,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                     {type: 'records', source: 'LIPPackageBuilder.GetLocalizations, ' },
                     true
                 );
-
                 vm.localizations(ko.utils.arrayMap(xmlData.localize.records, function(l){
                     return new Localize(l);
                 }));
@@ -131,20 +218,28 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         var checkIfVbaLoaded = false;
         var checkIfLocalizationsLoaded = false;
+        var checkIfActionpadsLoaded = false;
         // Navbar function to change tab
-        vm.showTab = function(t){
-            try{
-                if (t == 'vba' && checkIfVbaLoaded == false){
+        vm.showTab = function(t) {
+            try {
+                if (t == 'vba' && !checkIfVbaLoaded){
                     vm.getVbaComponents();
                     checkIfVbaLoaded = true;
-                }else if (t == 'localize' && !checkIfLocalizationsLoaded){
+                }
+                else if (t == 'localize' && !checkIfLocalizationsLoaded){
                     vm.getLocalizations();
                     checkIfLocalizationsLoaded = true;
+                }
+                else if (t == 'actionpads' && !checkIfActionpadsLoaded){
+                    vm.getActionpads();
+                    checkIfActionpadsLoaded = true;
                 }
 
                 vm.activeTab(t);
             }
-                catch(e){alert(e);}
+            catch(e) {
+                alert(e);
+            }
 
         };
 
@@ -153,11 +248,11 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         
       
         //Select all tables that exist in the opened package
-        vm.openExistingPackage = function(){            
+        vm.openExistingPackage = function() {            
             try
             {
                 var b64Json = window.external.run('LIPPackageBuilder.OpenExistingPackage');
-                if(b64Json != ""){
+                if(b64Json != "") {
                     b64Json = b64Json.replace(/\r?\n|\r/g,"");
                     b64Json = b64_to_utf8(b64Json);
                     
@@ -167,13 +262,21 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
             }
             catch(e){alert("Error opening existing package:\n" + e);}
-            if (vm.existingPackage){
+            if (vm.existingPackage) {
                 parseExistingPackage();
             }
-
         }
 
-        vm.downloadExistingPackage = function(){
+        vm.openExistingMetadataJson = function() {
+            app.metadataloader.openExistingMetadata(vm);
+        }
+
+        // Called upon button click in GUI
+        vm.openExistingChangelogMd = function() {
+            app.changelogloader.openExistingChangelog(vm);
+        }
+
+        vm.downloadExistingPackage = function() {
             alert("Not implemented");
         }
 
@@ -202,6 +305,9 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.localizations = ko.observableArray();
         vm.showLocalizations = ko.observable();
 
+        vm.actionpads = ko.observableArray();
+        vm.showActionpads = ko.observable();
+
         vm.filterComponents = function(){
             if(vm.componentFilter() != ""){
 
@@ -223,8 +329,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         vm.filterLocalizations = function(){
             if(vm.localizationFilter() != ""){
-
-
                 // Filter on the three visible columns (name, localname, timestamp)
                 vm.filteredLocalizations(ko.utils.arrayFilter(vm.localizations(), function(item) {
                     if(item.owner.toLowerCase().indexOf(vm.localizationFilter().toLowerCase()) != -1){
@@ -255,8 +359,23 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             }
         }
 
-         vm.filterSql = function(){
-            if(vm.sqlFilter() != ""){
+        vm.filterActionpads = function() {
+            if(vm.actionpadsFilter() !== "") {
+                // Filter on the table name only
+                vm.filteredActionpads(ko.utils.arrayFilter(vm.actionpads(), function(item) {
+                    if(item.tableName.toLowerCase().indexOf(vm.actionpadsFilter().toLowerCase()) !== -1) {
+                        return true;
+                    }
+                    return false;
+                }));
+            }
+            else {
+                vm.filteredActionpads(vm.actionpads().slice());
+            }
+        }
+
+        vm.filterSql = function() {
+            if(vm.sqlFilter() != "") {
                 vm.filteredSql.removeAll();
 
                 // Filter on the three visible columns (name, localname, timestamp)
@@ -272,7 +391,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             }
         }
 
-        vm.serializePackage = function(){
+        vm.serializePackage = function() {
             packagebuilder.serializePackage();
         }
 
@@ -304,15 +423,14 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.fieldFilter = ko.observable("");
         vm.componentFilter = ko.observable("");
         vm.localizationFilter = ko.observable("");
+        vm.actionpadsFilter = ko.observable("");
         vm.sqlFilter = ko.observable("");
 
         function b64_to_utf8(str) {
             return window.atob(str);
         }
 
-
-
-        // Load databas structure
+        // Load database structure
         try{
             var db = {};
             //lbs.loader.loadDataSource(db, { type: 'storedProcedure', source: 'csp_lip_getxmldatabase_wrapper', alias: 'structure' }, false);
@@ -345,9 +463,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                 return new Descriptive(d);
             }));
 
-
-
-
             var sqlDefinitions =  {};
             var def;
             $.each(json.data.database.sql.ProcedureOrFunction, function(i, s){
@@ -364,19 +479,11 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             alert(err)
         }
         // Data from details
-        vm.author = ko.observable("");
-        vm.comment = ko.observable("");
+        vm.uniqueName = ko.observable("");
+        vm.displayName = ko.observable("");
+        vm.version = ko.observable(new Version(''));
         vm.description = ko.observable("");
-        vm.versionNumber = ko.observable("");
-        vm.name = ko.observable("");
-        // Set default status to development
-        vm.status = ko.observable("Development");
-
-        // Set status options
-        vm.statusOptions = ko.observableArray([
-            new StatusOption('Development'), new StatusOption('Beta'), new StatusOption('Release')
-        ]);
-
+        
         // Load localization data
         try{
 
@@ -400,22 +507,15 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.shownTable = ko.observable();
         // All tables loaded
         vm.tables = ko.observableArray();
-        // Filtered tables. These are the ones loaded into the view
+        // Filtered arrays. These are the ones loaded into the view
         vm.filteredTables = ko.observableArray();
-
-
-
-        // Filtered Components
         vm.filteredComponents = ko.observableArray();
-
-        // Filtered Components
         vm.filteredLocalizations = ko.observableArray();
-
-        // Filtered SQL
+        vm.filteredActionpads = ko.observableArray();
         vm.filteredSql = ko.observableArray();
 
         // Load model objects
-        initModel(vm);
+        initModels(vm);
 
         try{
         // Populate table objects
@@ -446,6 +546,15 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             if(vm.localizations()){
                 return ko.utils.arrayFilter(vm.localizations(),function(l){
                     return l.checked() | false;
+                });
+            }
+        });
+
+        // Computed with all selected actionpads
+        vm.selectedActionpads = ko.computed(function(){
+            if(vm.actionpads()){
+                return ko.utils.arrayFilter(vm.actionpads(),function(a) {
+                    return a.checked() | false;
                 });
             }
         });
@@ -486,6 +595,10 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.filterLocalizations();
         });
 
+        vm.actionpadsFilter.subscribe(function(newValue){
+            vm.filterActionpads();
+        });
+
         vm.sqlFilter.subscribe(function(newValue){
             vm.filterSql();
         });
@@ -497,12 +610,16 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.getVbaComponents();
         checkIfVbaLoaded = true;
 
+        vm.getActionpads();
+        checkIfActionpadsLoaded = true;
+        
         // Set default filter
         vm.filterTables();
         vm.filterSql();
         vm.filterComponents();
-        
         vm.filterLocalizations();
+        vm.filterActionpads();
+
         $(window).scroll(function(){
             $("#localeInfo").stop().animate({"marginTop": ($(window).scrollTop()) + "px", "marginLeft":($(window).scrollLeft()) + "px"}, "slow" );
         });

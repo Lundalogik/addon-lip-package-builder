@@ -2,7 +2,7 @@
 var vm = {};
 
 // Load viewmodel
-initModel = function(viewModel){
+initModels = function(viewModel){
     vm = viewModel;
 }
 
@@ -375,13 +375,13 @@ var Field = function(f, tablename){
 }
 
 // Status options (development, beta, release)
-var StatusOption = function(o){
-    var self = this;
-    self.text = o;
-    this.select = function(){
-        vm.status(this.text);
-    }
-}
+// var StatusOption = function(o){
+//     var self = this;
+//     self.text = o;
+//     this.select = function(){
+//         vm.status(this.text);
+//     }
+// }
 
 var VbaComponent = function(c){
     var self = this;
@@ -467,4 +467,105 @@ var Localize = function(l){
         vm.selectedLocale(vm.selectedLocale() === self ? null : self);
     };
     self.inExistingPackage = ko.observable(false);
+}
+
+var Actionpad = function(a) {
+    var self = this;
+    self.tableName = a.tableName;
+    self.fileName = a.fileName;
+    self.checked = ko.observable(false);
+    self.inExistingPackage = ko.observable(false);
+}
+
+var Version = function(str) {
+    var self = this;
+
+    self.authors = ko.observable("");
+    self.comments = ko.observable("");
+    
+    // Set default values
+    self.major = ko.observable(0);
+    self.minor = ko.observable(0);
+    self.patch = ko.observable(0);
+
+    self.setValue = function(str) {
+        // Restore values first
+        self.major(0);
+        self.minor(0);
+        self.patch(0);
+
+        // Check if version formatted as x.y.z where x, y, z are numbers.
+        if (/^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$/.test(str)) {
+            // Retrieve actual numbers
+            var arr = str.split('.');
+            var ma = parseInt(arr[0]);
+            var mi = parseInt(arr[1]);
+            var pa = parseInt(arr[2]);
+
+            // All numbers can't be zero
+            if (ma === 0 && mi === 0 && pa === 0) {
+                return;
+            }
+
+            // Number seems ok => assign observables.
+            self.major(ma);
+            self.minor(mi);
+            self.patch(pa);
+        }    
+    }
+
+    if (str !== '') {
+        self.setValue(str);
+    }
+
+    self.increaseMajor = function() {
+        self.major((parseInt(self.major()) + 1).toString());
+        self.minor(0);
+        self.patch(0);
+    }
+
+    self.increaseMinor = function() {
+        self.minor((parseInt(self.minor()) + 1).toString());
+        self.patch(0);
+    }
+
+    self.increasePatch = function() {
+        self.patch((parseInt(self.patch()) + 1).toString());
+    }
+
+    self.fullNumber = ko.computed({
+        read: function() {
+            // If not all values are equal to zero, concatenate full version string and return
+            if (!(self.major() === 0 && self.minor() === 0 && self.patch() === 0)) {
+                return self.major().toString() + '.' + self.minor().toString() + '.' + self.patch().toString();
+            }
+            else {
+                return '';
+            }
+        },
+        write: function(str) {
+            self.setValue(str);
+        },
+        owner: this
+    });
+}
+
+var Metadata = function(data) {
+    var self = this;
+
+    if (!data) {
+        data = {
+            "uniqueName": '',
+            "displayName": '',
+            "description": '',
+            "cloudCompatible": false,
+            "tags": []
+        }
+    }
+
+    self.uniqueName = data.uniqueName;
+    self.displayName = data.displayName;
+    self.description = data.description;
+    self.cloudCompatible = data.cloudCompatible;            //##TODO: Add this to GUI
+    self.tags = data.tags                                   //##TODO: Add this to GUI
 }
