@@ -1,7 +1,17 @@
 # Changelog for LIP Package Builder
 
+## v1.2.1
+**Released:** 2018-05-07
+
+**Authors:** Fredrik Eriksson
+
+**Comments:**
+
+* Minor fixes in the template file for a new README.md.
+
+
 ## v1.2.0
-**Released:** 2018-04-xx
+**Released:** 2018-05-04
 
 **Authors:** Fredrik Eriksson
 
