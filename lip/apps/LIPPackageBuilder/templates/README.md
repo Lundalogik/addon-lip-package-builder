@@ -69,7 +69,7 @@
 
 9. Publish the actionpads.
 10. Restart the Lime CRM desktop client and start using the add-on!
-11. Add a customization record in Lime's Lime CRM under the customer. Note the version installed (can be found in the app.json file). Link it to the product card.
+11. Add a customization record in Sublime under the customer. Note the version installed. Link it to the product card.
 
 
 ## Configuration
