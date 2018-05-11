@@ -1,5 +1,15 @@
 # Changelog for LIP Package Builder
 
+## vNEXT
+**Released:** *Not yet released*
+
+**Authors:** Fredrik Eriksson
+
+**Comments:**
+
+* Removed ", Lime" from placeholder on Author(s).
+
+
 ## v1.2.1
 **Released:** 2018-05-07
 
