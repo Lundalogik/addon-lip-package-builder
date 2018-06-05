@@ -57,7 +57,7 @@ End Function
 
 ' ##SUMMARY Called from javascript.
 ' Returns a JSON string with an array of objects with two parameters:
-' the file name and the table name of all the available Actionpad HTML files in the current solution.
+' the file name and the table name of all the available Actionpad HTML files in the current application.
 Public Function GetAvailableActionpads() As String
     On Error GoTo ErrorHandler
     
@@ -93,6 +93,46 @@ Public Function GetAvailableActionpads() As String
     Exit Function
 ErrorHandler:
     Call UI.ShowError("LIPPackageBuilder.GetAvailableActionpads")
+End Function
+
+
+' ##SUMMARY Called from javascript.
+' Returns a JSON string with an array of objects with one parameter:
+' the folder name of all the folders in the Actionpads\apps folder in the current application.
+Public Function GetAvailableLBSApps() As String
+    On Error GoTo ErrorHandler
+    
+    ' Build array of objects
+    Dim sLBSAppsJson As String
+    sLBSAppsJson = "["
+    
+    ' Loop over folders and add to json
+    Dim oFSO As Object
+    Set oFSO = CreateObject("Scripting.FileSystemObject")
+    Dim oFolder As Variant
+    Set oFolder = oFSO.GetFolder(Application.WebFolder & "apps")
+    Dim oSubFolder As Variant
+    
+    Dim lngCount As Long
+    lngCount = 0
+    For Each oSubFolder In oFolder.SubFolders
+        lngCount = lngCount + 1
+        ' Add comma if there already is an element in the array
+        If lngCount > 1 Then
+            sLBSAppsJson = sLBSAppsJson + ","
+        End If
+        ' Add LBS app as object in the array
+        sLBSAppsJson = sLBSAppsJson & "{""name"": """ & oSubFolder.Name & """}"
+    Next
+    
+    ' Close array
+    sLBSAppsJson = sLBSAppsJson & "]"
+    
+    GetAvailableLBSApps = sLBSAppsJson
+    
+    Exit Function
+ErrorHandler:
+    Call UI.ShowError("LIPPackageBuilder.GetAvailableLBSApps")
 End Function
 
 
@@ -288,6 +328,15 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     If Not bResult Then
         Call Application.MessageBox("Could not export the sql descriptive expressions, will continue anyway...", vbInformation)
         bResult = True
+    End If
+    
+    ' Export LBS Apps
+    If bResult And oPackage("install").Exists("apps") Then
+        bResult = ExportLBSApps(oPackage, sTemporaryPackageFolderPath)
+    End If
+    If Not bResult Then
+        Call Application.MessageBox("Could not export LBS apps.", VBA.vbCritical + VBA.vbOKOnly)
+        Exit Sub
     End If
     
     ' Export Actionpads
@@ -1056,6 +1105,28 @@ Private Function ExportActionpads(ByRef oPackage As Object, sTempFolder As Strin
     Exit Function
 ErrorHandler:
     ExportActionpads = False
+End Function
+
+
+' ##SUMMARY Exports all LBS Apps included in the Package JSON.
+Private Function ExportLBSApps(ByRef oPackage As Object, sTempFolder As String) As Boolean
+    On Error GoTo ErrorHandler
+    
+    If Not oPackage.Item("install") Is Nothing Then
+        If Not oPackage.Item("install").Item("apps") Is Nothing Then
+            Dim oLBSApp As Object
+            Dim sLBSAppsFolderPath As String
+            sLBSAppsFolderPath = CreateFolder(sTempFolder, "apps")
+            For Each oLBSApp In oPackage.Item("install").Item("apps")
+                Call CopyFolder(LCO.MakeFileName(Application.WebFolder, "apps\" & oLBSApp.Item("name")), LCO.MakeFileName(sLBSAppsFolderPath, oLBSApp.Item("name")))
+            Next
+        End If
+    End If
+    ExportLBSApps = True
+    
+    Exit Function
+ErrorHandler:
+    ExportLBSApps = False
 End Function
 
 

@@ -15,6 +15,7 @@ initPackageLoader = function(viewModel){
                     clearCollection(table.guiFields(),"selected");
                 });
                 clearCollection(vm.localizations(),"checked");
+                clearCollection(vm.lbsApps(), 'checked');
                 clearCollection(vm.actionpads(), 'checked');
             }
             catch(e){alert(e);}
@@ -28,6 +29,7 @@ initPackageLoader = function(viewModel){
             loadExistingVba();
             loadExistingSQL();
             loadExistingLocalizations();
+            loadExistingLBSApps();
             loadExistingActionpads();
             
 }
@@ -150,6 +152,34 @@ loadExistingLocalizations = function(){
                 if(l.owner  == eLocalizations.owner && l.code == eLocalizations.code){
                     l.checked(true);
                     l.inExistingPackage(true);
+                }
+            });
+        });
+    }
+    catch(e) {
+        alert(e);
+    }
+}
+
+/**
+ * Flags the viewmodel's LBS Apps collection as inExistingPackage and checked
+ */
+loadExistingLBSApps = function() {
+    var existingPackageLBSApps = vm.existingPackage.install.apps;
+    
+    if (!existingPackageLBSApps) {
+        return;
+    }
+    
+    try {
+        // Loop LBS apps from opened package.
+        ko.utils.arrayForEach(existingPackageLBSApps, function(existingLBSApp) {
+            // Loop LBS Apps from the current application. If they have the same name as the one in the opened package,
+            // select it and mark as inExistingPackage.
+            ko.utils.arrayForEach(vm.lbsApps(), function (currentApplicationLBSApps) {
+                if(currentApplicationLBSApp.name  === existingLBSApp.name) {
+                    currentApplicationLBSApp.checked(true);
+                    currentApplicationLBSApp.inExistingPackage(true);
                 }
             });
         });
