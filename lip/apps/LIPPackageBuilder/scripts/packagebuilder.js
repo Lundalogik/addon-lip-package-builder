@@ -215,7 +215,7 @@ packagebuilder = {
             $.each(vm.selectedLBSApps(), function(i, a) {
                 arrLBSApps.push({
                     'name': a.name,
-                    'relPath': "actionpads\\apps\\" + a.name
+                    'relPath': "apps\\" + a.name
                 });
             });
 
