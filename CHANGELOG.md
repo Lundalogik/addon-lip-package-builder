@@ -8,6 +8,7 @@
 **Comments:**
 
 * Removed ", Lime" from placeholder on Author(s).
+* Changed package.json to lip.json.
 
 
 ## v1.2.1
