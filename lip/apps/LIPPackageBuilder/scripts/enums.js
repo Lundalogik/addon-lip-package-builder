@@ -1,31 +1,31 @@
 enums = {
-    "initialize": function (vm){
+    "initialize": function (vm) {
         vm.fieldTypes = {
-            "1" : "string",
-            "2" : "geography",
-            "3" : "integer",
-            "4" : "decimal",
-            "7" : "time",
-            "8" : "text",
-            "9" : "script",
-            "10" : "html",
-            "11" : "xml",
-            "12" : "link",
-            "13" : "yesno",
-            "14" : "multirelation",
-            "15" : "file",
-            "16" : "relation",
-            "17" : "user",
-            "18" : "security",
-            "19" : "calendar",
-            "20" : "set",
-            "21" : "option",
-            "22" : "image",
-            "23" : "formatedstring",
-            "25" : "automatic",
-            "26" : "color",
-            "27" : "sql",
-            "255" : "system"
+            "1": "string",
+            "2": "geography",
+            "3": "integer",
+            "4": "decimal",
+            "7": "time",
+            "8": "text",
+            "9": "script",
+            "10": "html",
+            "11": "xml",
+            "12": "link",
+            "13": "yesno",
+            "14": "multirelation",
+            "15": "file",
+            "16": "relation",
+            "17": "user",
+            "18": "security",
+            "19": "calendar",
+            "20": "set",
+            "21": "option",
+            "22": "image",
+            "23": "formatedstring",
+            "25": "automatic",
+            "26": "color",
+            "27": "sql",
+            "255": "system"
         };
 		
 		//Translation for tooltip. Field:Label
@@ -80,7 +80,6 @@ enums = {
 			"47": "Visiting Address - Zip Code",
 			"48": "Visiting Address - City",
 			"49": "Visiting Address - Country"
-
 		};
 		
 		//Translation for tooltip. Field:Newline
@@ -136,29 +135,29 @@ enums = {
 		};
 		
 		vm.tableLabel = {
-			"0":"none",
-			"1":"company",
-			"2":"person",
-			"3":"project",
-			"4":"todo",
-			"5":"note",
-			"6":"user",
-			"7":"document",
-			"8":"campaign",
-			"9":"history",
-			"10":"trashcan",
-			"11":"infolog",
-			"12":"sos",
-			"13":"office",
-			"14":"product",
-			"15":"article",
-			"16":"category"
+			"0": "none",
+			"1": "company",
+			"2": "person",
+			"3": "project",
+			"4": "todo",
+			"5": "note",
+			"6": "user",
+			"7": "document",
+			"8": "campaign",
+			"9": "history",
+			"10": "trashcan",
+			"11": "infolog",
+			"12": "sos",
+			"13": "office",
+			"14": "product",
+			"15": "article",
+			"16": "category"
 		};
 		
 		vm.tableinvisible = {
-		"0":"no",
-		"1":"yes",
-		"2":"nonadministrators"
+			"0": "no",
+			"1": "yes",
+			"2": "nonadministrators"
 		};
 		
         // Attributes for tables
@@ -202,18 +201,19 @@ enums = {
             "optionquery",
             "relatedtable",
             "relationmaxcount"
-        ];
+		];
+		
         vm.FieldtTypeDisplayNames = {
-            "string" : "Text",
-            "formatedstring" : "Formatted text",
-            "yesno" : "Yes/No",
-            "link" : "Link",
-            "option" : "Option",
-            "relation" : "Relation",
-            "time" : "Time",
-            "integer" : "Integer",
-            "decimal" : "Decimal",
-            "user" : "Username",
+            "string": "Text",
+            "formatedstring": "Formatted text",
+            "yesno": "Yes/No",
+            "link": "Link",
+            "option": "Option",
+            "relation": "Relation",
+            "time": "Time",
+            "integer": "Integer",
+            "decimal": "Decimal",
+            "user": "Username",
             "set": "Set",
             "file": "File",
             "xml": "XML",
@@ -224,8 +224,5 @@ enums = {
             "idcategory",
             "timestamp"
         ]
-            
-
-
     }
 }
