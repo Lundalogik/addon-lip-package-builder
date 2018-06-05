@@ -8,6 +8,7 @@
 **Comments:**
 
 * Removed ", Lime" from placeholder on Author(s).
+* Added support for LBS apps.
 
 
 ## v1.2.1
