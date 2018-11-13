@@ -1276,6 +1276,8 @@ Public Function OpenExistingPackage() As String
         Exit Function
     End If
     
+    Application.MousePointer = 11
+    
     If LCO.ExtractFileExtension(sFilePath) = "zip" Then
         Dim strTempFolderPath As String
         strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
@@ -1294,6 +1296,7 @@ Public Function OpenExistingPackage() As String
         ElseIf LCO.FileExists(strTempFolderPath & "\" & "package.json") Then
             strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "package.json")
         Else
+            Application.MousePointer = 0
             Call Application.MessageBox("Could not find an app.json or a package.json in the extracted folder")
             Exit Function
         End If
@@ -1304,11 +1307,15 @@ Public Function OpenExistingPackage() As String
         OpenExistingPackage = b64Json
     End If
     
+    Application.MousePointer = 0
+    
     Exit Function
 ErrorHandler:
+    Application.MousePointer = 0
     Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
     Exit Function
 UnzipError:
+    Application.MousePointer = 0
     Call Application.MessageBox("There was an error unzipping the zipped package file")
 End Function
 
