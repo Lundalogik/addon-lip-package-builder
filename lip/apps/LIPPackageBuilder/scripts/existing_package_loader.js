@@ -1,11 +1,12 @@
 var vm = {};
 
 // Load viewmodel
-initPackageLoader = function(viewModel){
+initPackageLoader = function(viewModel) {
     vm = viewModel;
 }
 
- parseExistingPackage = function(){
+
+parseExistingPackage = function() {
             //Clear all selected and 'inExistingPackage' properties for all objects
             try{
                 clearCollection(vm.vbaComponents(), "selected");
@@ -31,8 +32,9 @@ initPackageLoader = function(viewModel){
             loadExistingLocalizations();
             loadExistingLBSApps();
             loadExistingActionpads();
-            
 }
+
+
 /**
  * Sets all items in a collection as unselected and not in an existing package
  * based on the second parameter
@@ -176,7 +178,7 @@ loadExistingLBSApps = function() {
         ko.utils.arrayForEach(existingPackageLBSApps, function(existingLBSApp) {
             // Loop LBS Apps from the current application. If they have the same name as the one in the opened package,
             // select it and mark as inExistingPackage.
-            ko.utils.arrayForEach(vm.lbsApps(), function (currentApplicationLBSApps) {
+            ko.utils.arrayForEach(vm.lbsApps(), function (currentApplicationLBSApp) {
                 if(currentApplicationLBSApp.name  === existingLBSApp.name) {
                     currentApplicationLBSApp.checked(true);
                     currentApplicationLBSApp.inExistingPackage(true);
