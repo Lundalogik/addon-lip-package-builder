@@ -9,6 +9,7 @@
 
 * Removed ", Lime" from placeholder on Author(s).
 * Added support for LBS apps.
+* Compliant with latest version of Lime Core that has a prefix `LC_` on its VBA modules.
 
 
 ## v1.2.1

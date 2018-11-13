@@ -26,7 +26,7 @@ Public Sub OpenPackageBuilder()
 
     Exit Sub
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.OpenPackageBuilder")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenPackageBuilder")
 End Sub
 
 
@@ -51,7 +51,7 @@ Public Function LoadDataStructure(strProcedureName As String) As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.LoadDatastructure")
+    Call LC_UI.ShowError("LIPPackageBuilder.LoadDatastructure")
 End Function
 
 
@@ -92,7 +92,7 @@ Public Function GetAvailableActionpads() As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetAvailableActionpads")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetAvailableActionpads")
 End Function
 
 
@@ -132,7 +132,7 @@ Public Function GetAvailableLBSApps() As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetAvailableLBSApps")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetAvailableLBSApps")
 End Function
 
 
@@ -159,7 +159,7 @@ Public Function GetVBAComponents() As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetVBAComponents")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetVBAComponents")
 End Function
 
 
@@ -183,7 +183,7 @@ Private Function GetModuleTypeName(ModuleType As Long) As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetModuleTypeName")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetModuleTypeName")
 End Function
 
 
@@ -446,7 +446,7 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     
     Exit Sub
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.CreatePackage")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreatePackage")
 End Sub
 
 
@@ -778,7 +778,7 @@ Private Function SaveTableIcons(oPackage As Object, strTempFolder As String) As 
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.SaveTableIcons")
+    Call LC_UI.ShowError("LIPPackageBuilder.SaveTableIcons")
 End Function
 
 
@@ -811,7 +811,7 @@ Private Function ExportSql(oPackage As Object, strTempFolder As String) As Boole
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.ExportSql")
+    Call LC_UI.ShowError("LIPPackageBuilder.ExportSql")
 End Function
 
 
@@ -947,7 +947,7 @@ End Function
 '    Exit Function
 'ErrorHandler:
 '    CheckUniqueFilename = ""
-'    Call UI.ShowError("LIPPackageBuilder.CheckUniqueFilename")
+'    Call LC_UI.ShowError("LIPPackageBuilder.CheckUniqueFilename")
 'End Function
 
 
@@ -978,7 +978,7 @@ Private Function GetCleanTimestamp() As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetCleanTimestamp")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetCleanTimestamp")
 End Function
 
 
@@ -1233,7 +1233,7 @@ Private Function CreateFolder(sParentFolderPath As String, sSubFolderName As Str
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.CreateFolder")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreateFolder")
 End Function
 
 
@@ -1259,7 +1259,7 @@ Public Function GetLocalizations(ByVal sOwner As String) As Records
     Set GetLocalizations = oRecords
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetLocalizations")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetLocalizations")
 End Function
 
 
@@ -1306,7 +1306,7 @@ Public Function OpenExistingPackage() As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
     Exit Function
 UnzipError:
     Call Application.MessageBox("There was an error unzipping the zipped package file")
@@ -1392,7 +1392,7 @@ Public Function OpenExistingChangelog() As String
     Exit Function
 ErrorHandler:
     OpenExistingChangelog = "{}"
-    Call UI.ShowError("LIPPackageBuilder.OpenExistingChangelog")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingChangelog")
 End Function
 
 
@@ -1423,7 +1423,7 @@ Public Function OpenExistingMetadata() As String
     Exit Function
 ErrorHandler:
     OpenExistingMetadata = "{}"
-    Call UI.ShowError("LIPPackageBuilder.OpenExistingMetadata")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingMetadata")
 End Function
 
 
@@ -1472,7 +1472,7 @@ On Error GoTo ErrorHandler
     ReadAllTextFromFile = strText
 Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.ReadAllTextFromFile")
+    Call LC_UI.ShowError("LIPPackageBuilder.ReadAllTextFromFile")
 End Function
 
 
@@ -1513,7 +1513,7 @@ Private Function Base64StringToJsonObject(sInput As String) As Object
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.Base64StringToJsonObject")
+    Call LC_UI.ShowError("LIPPackageBuilder.Base64StringToJsonObject")
 End Function
 
 
@@ -1531,7 +1531,7 @@ Private Function CopyFolder(sSourcePath As String, sTargetPath As String) As Boo
     Exit Function
 ErrorHandler:
     CopyFolder = False
-    Call UI.ShowError("LIPPackageBuilder.CopyFolder")
+    Call LC_UI.ShowError("LIPPackageBuilder.CopyFolder")
 End Function
 
 
@@ -1556,7 +1556,7 @@ Private Function CreateReadmeMd(ByRef oReadmeInfo As Object, sPath As String) As
     Exit Function
 ErrorHandler:
     CreateReadmeMd = False
-    Call UI.ShowError("LIPPackageBuilder.CreateReadmeMd")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreateReadmeMd")
 End Function
 
 
@@ -1601,7 +1601,7 @@ Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As Stri
     Exit Function
 ErrorHandler:
     CreateChangelogMd = False
-    Call UI.ShowError("LIPPackageBuilder.CreateChangelogMd")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreateChangelogMd")
 End Function
 
 
@@ -1613,7 +1613,7 @@ Public Function GetVersion() As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetVersion")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetVersion")
 End Function
 
 
@@ -1637,7 +1637,7 @@ Private Function SelectFile(sCaption As String, sFilter As String) As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.SelectFile")
+    Call LC_UI.ShowError("LIPPackageBuilder.SelectFile")
 End Function
 
 
