@@ -8,6 +8,10 @@
 **Comments:**
 
 * Removed ", Lime" from placeholder on Author(s).
+* Added support for LBS apps.
+* Compliant with latest version of Lime Core that has a prefix `LC_` on its VBA modules.
+* Mouse pointer indicates loading when opening existing package.
+* Message prompted to user when loading of existing package is finished.
 
 
 ## v1.2.1

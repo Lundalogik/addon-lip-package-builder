@@ -469,6 +469,13 @@ var Localize = function(l){
     self.inExistingPackage = ko.observable(false);
 }
 
+var LBSApp = function(a) {
+    var self = this;
+    self.name = a.name;
+    self.checked = ko.observable(false);
+    self.inExistingPackage = ko.observable(false);
+}
+
 var Actionpad = function(a) {
     var self = this;
     self.tableName = a.tableName;

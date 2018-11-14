@@ -12,6 +12,7 @@ packagebuilder = {
         var relations = {};
         var sqlObjects = [];
         var localizations = [];
+        var lbsApps = [];
         var actionpads = [];
         if (vm.uniqueName() === '') {
             alert("You must specify a name. If you are creating a new add-on, it must be unique (check GitHub).");
@@ -21,15 +22,15 @@ packagebuilder = {
         try {
             // For each selected table
 
-            $.each(vm.selectedTables(),function(i,table){
+            $.each(vm.selectedTables(), function(i, table){
                 var packageTable = {};
                 
                 //Clone the table object
-                packageTable = jQuery.extend(true,{},table);
+                packageTable = jQuery.extend(true, {}, table);
 
                 // Fetch local names from table with same name
-                var localNameTable  = vm.localNames.Tables.filter(function(t){
-                    return t.name == table.name;
+                var localNameTable = vm.localNames.Tables.filter(function(t){
+                    return t.name === table.name;
                 })[0];
 
                 // Set singular and plural local names for table
@@ -37,7 +38,7 @@ packagebuilder = {
                 packageTable.localname_plural = localNameTable.localname_plural;
 
                 var icon = vm.tableIcons().filter(function(ti){
-                    return ti.table == table.name;
+                    return ti.table === table.name;
                 })[0];
 
                 if(icon != null){
@@ -48,34 +49,32 @@ packagebuilder = {
                 var fields = [];
                 var packageFields = [];
 
-                var selectedFields = jQuery.extend(true,{},table.selectedFields());
-                $.each(selectedFields,function(j,field){
+                var selectedFields = jQuery.extend(true, {}, table.selectedFields());
+                $.each(selectedFields, function(j, field){
                     // First, make sure that it is an array to make the code work properly. If there is only one field in the table, it is a single object instead of the array it should be.
                     if (!_.isArray(localNameTable.Fields)) {
                         localNameTable.Fields = [localNameTable.Fields];
                     }
                     // Fetch local names from field with same name from the other data source
-                    var localNameField = localNameTable.Fields.filter(function(f){
-                        return f.name == field.name;
+                    var localNameField = localNameTable.Fields.filter(function(f) {
+                        return f.name === field.name;
                     })[0];
                     
                     //Clone the field
-                    var packageField = jQuery.extend(true,{},field);
+                    var packageField = jQuery.extend(true, {}, field);
 
                     // Set local names for current field
-                    packageField.localname = jQuery.extend(true,{},localNameField);
+                    packageField.localname = jQuery.extend(true, {}, localNameField);
 
                     // Create relations
-                    try{
-                        if(field.attributes.fieldtype == "relation"){
+                    try {
+                        if (field.attributes.fieldtype == "relation") {
                             //Lookup if relation already added
                             var existingRelation = relations[field.attributes.idrelation];
 
-                            if(existingRelation == null || existingRelation == undefined){
-                                var packageRelation = new Relation(field.attributes.idrelation,table.name, field.name);
+                            if (existingRelation == null || existingRelation == undefined) {
+                                var packageRelation = new Relation(field.attributes.idrelation, table.name, field.name);
                                 relations[field.attributes.idrelation] = packageRelation;
-
-
                             }
                             else{
                                 existingRelation.table2 = table.name;
@@ -83,38 +82,36 @@ packagebuilder = {
                             }
                         }
                     }
-                    catch(e){
+                    catch(e) {
                         alert(e);
                     }
 
-                    if(packageField.localname && packageField.localname.name){
+                    if (packageField.localname && packageField.localname.name) {
                         delete packageField.localname.name;
                     }
 
-                    if(packageField.localname && packageField.localname.order){
+                    if (packageField.localname && packageField.localname.order) {
                         delete packageField.localname.order;
                     }
 
                     //The separator is added correctly as a property on a field, instead of localname.
-                    if(packageField.localname && packageField.localname.separator){
+                    if (packageField.localname && packageField.localname.separator) {
                         packageField.separator = packageField.localname.separator;
 
                         delete packageField.localname.separator;
 
                     }
 
-                    if(packageField.separator && packageField.separator.order){
+                    if (packageField.separator && packageField.separator.order) {
                         delete packageField.separator.order;
                     }
 
-                    if(packageField.localname && packageField.localname.option){
+                    if (packageField.localname && packageField.localname.option) {
                         delete packageField.localname.option;
                     }
 
                     // Push field to fields
                     fields.push(packageField);
-
-
                 });
 
                 // Set fields to the current table
@@ -126,32 +123,31 @@ packagebuilder = {
 
 
             //Add relations as the package expects
-            for(idrelation in relations){
-                if(relations[idrelation].table2 != ""){
+            for (idrelation in relations) {
+                if (relations[idrelation].table2 !== "") {
                     packageRelations.push({"table1": relations[idrelation].table1,
                                             "field1": relations[idrelation].field1,
                                             "table2": relations[idrelation].table2,
                                             "field2": relations[idrelation].field2
-                                            })
+                                        })
                 }
-
             }
 
             var packageRelationFields = [];
             //Fetch all relationfields in package
             var index;
-            for(index = 0;index < packageTables.length; ++index){
+            for (index = 0; index < packageTables.length; ++index) {
                 var j;
-                for (j = 0;j <  packageTables[index].fields.length; j++){
+                for (j = 0; j <  packageTables[index].fields.length; j++) {
                     var f = packageTables[index].fields[j];
-                    if (f.attributes.fieldtype == "relation"){
-                    packageRelationFields.push({ "name":packageTables[index].name + '.' + f.name, "remove": 1});
+                    if (f.attributes.fieldtype === "relation"){
+                        packageRelationFields.push({"name": packageTables[index].name + '.' + f.name, "remove": 1});
                     }
                 }
             }
 
             //Check if field is existing in an relation
-            for (index = 0;index < packageRelationFields.length; index++) {
+            for (index = 0; index < packageRelationFields.length; index++) {
                 var rf = packageRelationFields[index];
                 var j;
                 for (j = 0; j < packageRelations.length;j++) {
@@ -176,7 +172,7 @@ packagebuilder = {
                             });
                             //remove field from package
                             if(indexOfObjectToRemove >= 0) {
-                                packageTable.fields.splice(indexOfObjectToRemove,1);
+                                packageTable.fields.splice(indexOfObjectToRemove, 1);
                             }
                         }
                     });
@@ -187,13 +183,13 @@ packagebuilder = {
                 sqlObjects.push({"name": sql.name, "definition": vm.sqlDefinitions()[sql.name]})
             });
         }
-        catch(e){
+        catch(e) {
             alert(e);
         }
 
         try {
             var arrComponents = [];
-            $.each(vm.selectedVbaComponents(), function(i, component){
+            $.each(vm.selectedVbaComponents(), function(i, component) {
                 arrComponents.push({
                     "name": component.name,
                     "relPath": "vba\\" + component.name + component.extension()
@@ -212,6 +208,14 @@ packagebuilder = {
                     'fi' : locale.fi,
                     'no' : locale.no,
                     'da' : locale.da
+                });
+            });
+
+            var arrLBSApps = [];
+            $.each(vm.selectedLBSApps(), function(i, a) {
+                arrLBSApps.push({
+                    'name': a.name,
+                    'relPath': "apps\\" + a.name
                 });
             });
 
@@ -251,6 +255,11 @@ packagebuilder = {
             
             if(arrLocalizations.length > 0){
                 package_json.install.localize = arrLocalizations;
+                bSomethingToInstall = true;
+            }
+
+            if(arrLBSApps.length > 0){
+                package_json.install.apps = arrLBSApps;
                 bSomethingToInstall = true;
             }
 
