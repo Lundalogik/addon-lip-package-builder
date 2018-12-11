@@ -359,7 +359,7 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     'End If
 
     
-    ' Save Package.json
+    ' Save lip.json
     If bResult Then
         bResult = SavePackageFile(oPackage, sTemporaryPackageFolderPath)
     End If
