@@ -1,6 +1,6 @@
 # Changelog for LIP Package Builder
 
-## vNEXT
+## v1.3.0
 **Released:** *Not yet released*
 
 **Authors:** Fredrik Eriksson

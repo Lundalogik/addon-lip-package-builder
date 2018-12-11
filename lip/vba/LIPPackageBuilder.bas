@@ -2,7 +2,7 @@ Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
 ' Used for showing in the GUI and also setting in the generated lip.json files.
-Private Const m_sLIPPackageBuilderVersion As String = "1.2.1"
+Private Const m_sLIPPackageBuilderVersion As String = "1.3.0"
 
 ' Used for storing an uploaded existing CHANGELOG.md file until createPackage is called.
 Private m_uploaded_changelog_md As String
@@ -1287,7 +1287,7 @@ Public Function OpenExistingPackage() As String
         End If
         
         On Error GoTo UnzipError
-        Call UnZip(strTempFolderPath, sFilePath)
+        Call Unzip(strTempFolderPath, sFilePath)
 
         On Error GoTo ErrorHandler
         Dim strJson As String
@@ -1432,7 +1432,7 @@ ErrorHandler:
 End Function
 
 
-Private Sub UnZip(strTargetPath As String, Fname As Variant)
+Private Sub Unzip(strTargetPath As String, Fname As Variant)
     Dim oApp As Object, FSOobj As Object
     Dim FileNameFolder As Variant
 
