@@ -1,7 +1,7 @@
 Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
-' Used for showing in the GUI and also setting in the generated packages.json files.
+' Used for showing in the GUI and also setting in the generated lip.json files.
 Private Const m_sLIPPackageBuilderVersion As String = "1.2.1"
 
 ' Used for storing an uploaded existing CHANGELOG.md file until createPackage is called.
@@ -1038,7 +1038,7 @@ Private Function DeleteTemporaryFolder(strTempFolder As String) As Boolean
         strTempFolder = Left(strTempFolder, Len(strTempFolder) - 1)
     End If
 
-    If fso.FolderExists(strTempFolder) = False Then
+    If fso.folderExists(strTempFolder) = False Then
         DeleteTemporaryFolder = True
         Exit Function
     End If
@@ -1282,7 +1282,7 @@ Public Function OpenExistingPackage() As String
         Dim strTempFolderPath As String
         strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
         Dim fso As New Scripting.FileSystemObject
-        If Not fso.FolderExists(strTempFolderPath) Then
+        If Not fso.folderExists(strTempFolderPath) Then
             Call fso.CreateFolder(strTempFolderPath)
         End If
         
@@ -1444,7 +1444,7 @@ Private Sub UnZip(strTargetPath As String, Fname As Variant)
     
     'create destination folder if it does not exist
     Set FSOobj = CreateObject("Scripting.FilesystemObject")
-    If FSOobj.FolderExists(FileNameFolder) = False Then
+    If FSOobj.folderExists(FileNameFolder) = False Then
         FSOobj.CreateFolder FileNameFolder
     End If
     
