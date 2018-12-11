@@ -143,6 +143,15 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             });
         });
 
+        // Checkbox to select all LBS apps
+        vm.selectAllLBSApps = ko.observable(false);
+
+        vm.selectAllLBSApps.subscribe(function(newValue) {
+            ko.utils.arrayForEach(vm.filteredLBSApps(),function(a) {
+                a.checked(newValue);
+            });
+        });
+
         // Checkbox to select all Actionpads
         vm.selectAllActionpads = ko.observable(false);
 
@@ -171,6 +180,28 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.componentFilter("");
             vm.filteredComponents(vm.vbaComponents());
             vm.showComponents(true);
+        };
+
+        vm.getLBSApps = function() {
+            try {
+                var lbsApps = lbs.common.executeVba('LIPPackageBuilder.GetAvailableLBSApps');
+                lbsApps = $.parseJSON(lbsApps);
+
+                vm.lbsApps(ko.utils.arrayMap(lbsApps, function(a) {
+                    return new LBSApp(a);
+                }));
+
+                vm.lbsApps.sort(function(left, right) {
+                    return left.name === right.name ? 0 : (left.name < right.name ? -1 : 1);
+                });
+            }
+            catch (e) {
+                alert(e);
+            }
+
+            vm.lbsAppsFilter("");
+            vm.filteredLBSApps(vm.lbsApps());
+            vm.showLBSApps(true);
         };
 
         vm.getActionpads = function() {
@@ -218,6 +249,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
 
         var checkIfVbaLoaded = false;
         var checkIfLocalizationsLoaded = false;
+        var checkIfLBSAppsLoaded = false;
         var checkIfActionpadsLoaded = false;
         // Navbar function to change tab
         vm.showTab = function(t) {
@@ -229,6 +261,10 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                 else if (t == 'localize' && !checkIfLocalizationsLoaded){
                     vm.getLocalizations();
                     checkIfLocalizationsLoaded = true;
+                }
+                else if (t == 'lbsapps' && !checkIfLBSAppsLoaded){
+                    vm.getLBSApps();
+                    checkIfLBSAppsLoaded = true;
                 }
                 else if (t == 'actionpads' && !checkIfActionpadsLoaded){
                     vm.getActionpads();
@@ -305,6 +341,9 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.localizations = ko.observableArray();
         vm.showLocalizations = ko.observable();
 
+        vm.lbsApps = ko.observableArray();
+        vm.showLBSApps = ko.observable();
+
         vm.actionpads = ko.observableArray();
         vm.showActionpads = ko.observable();
 
@@ -356,6 +395,21 @@ lbs.apploader.register('LIPPackageBuilder', function () {
                 }));
             }else{
                 vm.filteredLocalizations(vm.localizations().slice());
+            }
+        }
+
+        vm.filterLBSApps = function() {
+            if(vm.lbsAppsFilter() !== "") {
+                // Filter on the name only
+                vm.filteredLBSApps(ko.utils.arrayFilter(vm.lbsApps(), function(item) {
+                    if(item.name.toLowerCase().indexOf(vm.lbsAppsFilter().toLowerCase()) !== -1) {
+                        return true;
+                    }
+                    return false;
+                }));
+            }
+            else {
+                vm.filteredLBSApps(vm.lbsApps().slice());
             }
         }
 
@@ -423,6 +477,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.fieldFilter = ko.observable("");
         vm.componentFilter = ko.observable("");
         vm.localizationFilter = ko.observable("");
+        vm.lbsAppsFilter = ko.observable("");
         vm.actionpadsFilter = ko.observable("");
         vm.sqlFilter = ko.observable("");
 
@@ -511,6 +566,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.filteredTables = ko.observableArray();
         vm.filteredComponents = ko.observableArray();
         vm.filteredLocalizations = ko.observableArray();
+        vm.filteredLBSApps = ko.observableArray();
         vm.filteredActionpads = ko.observableArray();
         vm.filteredSql = ko.observableArray();
 
@@ -546,6 +602,15 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             if(vm.localizations()){
                 return ko.utils.arrayFilter(vm.localizations(),function(l){
                     return l.checked() | false;
+                });
+            }
+        });
+
+        // Computed with all selected LBS Apps
+        vm.selectedLBSApps = ko.computed(function(){
+            if(vm.lbsApps()){
+                return ko.utils.arrayFilter(vm.lbsApps(),function(a) {
+                    return a.checked() | false;
                 });
             }
         });
@@ -595,6 +660,10 @@ lbs.apploader.register('LIPPackageBuilder', function () {
             vm.filterLocalizations();
         });
 
+        vm.lbsAppsFilter.subscribe(function(newValue){
+            vm.filterLBSApps();
+        });
+
         vm.actionpadsFilter.subscribe(function(newValue){
             vm.filterActionpads();
         });
@@ -610,6 +679,9 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.getVbaComponents();
         checkIfVbaLoaded = true;
 
+        vm.getLBSApps();
+        checkIfLBSAppsLoaded = true;
+
         vm.getActionpads();
         checkIfActionpadsLoaded = true;
         
@@ -618,6 +690,7 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         vm.filterSql();
         vm.filterComponents();
         vm.filterLocalizations();
+        vm.filterLBSApps();
         vm.filterActionpads();
 
         $(window).scroll(function(){
@@ -625,9 +698,6 @@ lbs.apploader.register('LIPPackageBuilder', function () {
         });
         return vm;
     };
-
-
-
 });
 
 

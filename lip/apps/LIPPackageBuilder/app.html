@@ -13,6 +13,7 @@
 			<li role="presentation" data-bind="css: {'active' : activeTab() === 'vba'}, click: function(){showTab('vba')}"><a href="#">VBA</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() === 'sql'}, click: function(){showTab('sql')}"><a href="#">SQL</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() === 'localize'}, click: function(){showTab('localize')}"><a href="#">Localizations</a></li>
+            <li role="presentation" data-bind="css: {'active' : activeTab() === 'lbsapps'}, click: function(){showTab('lbsapps')}"><a href="#">LBS Apps</a></li>
             <li role="presentation" data-bind="css: {'active' : activeTab() === 'actionpads'}, click: function(){showTab('actionpads')}"><a href="#">Actionpads</a></li>
 		</ul>
 		<button type="button" class="btn btn-default pull-right navbar-btn" data-bind="click: serializePackage, icon: 'fa-floppy-o'">Generate Package</button>
@@ -32,12 +33,10 @@
 					<button type="button" class="btn" data-bind="css: {'btn-primary': isAddon()}, click: function() { isAddon(true); }">Add-on</button>
 				</div>
 			</div>
-			
 			<div class="form-group col-md-12">
 		    	<label for="inputUniqueName" data-bind="text: inputLabelUniqueName"></label>
 		    	<input type="text" class="form-control" id="inputName" placeholder="a-z only" data-bind="value: uniqueName, valueUpdate: 'afterkeydown', hasFocus: true" />
 			</div>
-
 			<div data-bind="visible: isAddon()">
 				<div class="form-group col-md-12 lippb-formsectionheader">
 					<span class="lippb-formheadertext">FOR APP STORE</span>
@@ -51,7 +50,6 @@
 					<label for="inputDescription">Description</label>
 					<textarea rows="3" type="text" class="form-control" id="inputDescription" placeholder="a short description" data-bind="value: description, valueUpdate: 'afterkeydown'"></textarea>
 				</div>
-
 				<div class="form-group col-md-12 lippb-formsectionheader">
 					<span class="lippb-formheadertext">VERSIONING</span>
 					<hr class="lippb-formsectiondivider lippb-formsectiondividerlessmargin">
@@ -86,7 +84,6 @@
 * Added preparation instructions for customer's IT to README." data-bind="value: version().comments, valueUpdate: 'afterkeydown'"></textarea>
 				</div>
 			</div>
-
 			<div class="form-group col-md-12 lippb-formsectionheader">
 				<span class="lippb-formheadertext">OPEN EXISTING</span>
 				<hr class="lippb-formsectiondivider">
@@ -97,7 +94,6 @@
 				<button type="button" class="btn btn-default" data-bind="click: openExistingChangelogMd, icon: 'fa-folder-open-o', visible: isAddon()">CHANGELOG.md</button>
 			</div>
 		</form>
-
 	</div>
 	<div class="row col-md-12 col-md-offset-1" data-bind="visible: activeTab() === 'database'">
 		<div class="row">
@@ -123,7 +119,6 @@
 						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
 							<input class="select-all" type="checkbox" data-bind="checked: selectTables, popover: 'Select all'" >
 						</span>
-
 				  		<span class="col-md-4 list-header" data-bind="text: 'Name'"/>
 				  		<span class="col-md-4 list-header" data-bind="text: 'Localname'"/>
 				  		<span class="col-md-2 list-header" data-bind="text: 'Timestamp'"/>
@@ -134,12 +129,10 @@
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="stopBubble: true, indeterminateOrChecked:indeterminate, click:select" >
 						</span>
-
 						<span class="col-md-4" data-bind="text: name"/>
 						<span class="col-md-4" data-bind="text: localname"/>
 						<span class="col-md-2" data-bind="text: timestamp()"/>
                         <span class="col-md-1" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage" > </span>
-
 					</a>
 					<!-- /ko -->
 				</div>
@@ -161,24 +154,19 @@
 				  		<span class="col-md-2 list-header" data-bind="text: 'Field type'"/>
                         <span class="col-md-3 list-header" data-bind="text: 'Localname'"/>
 				  		<span class="col-md-2 list-header" data-bind="text: 'Timestamp'"/>
-
-              <span class="col-md-1 list-header" >&nbsp;</span>
-                        
-
+              			<span class="col-md-1 list-header" >&nbsp;</span>
 				  	</div>
 					<!-- ko foreach: shownTable().filteredFields() -->
 					<a class="list-group-item" data-bind="click: select, tooltip:{ text:tooltipAttributes(), placement: ($index() > 5) ? 'top' : 'bottom'}" data-html="true" >
-
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="checked: selected, stopBubble: true" >
 						</span>
-
-						<div class="col-md-3 hideOverflow"><span class="hideOverflow" data-bind="text: name"/></div>
+						<div class="col-md-3 hideOverflow"><span class="hideOverflow" data-bind="text: name"/>
+						</div>
                         <strong class="col-md-2 hideOverflow" data-bind="text: fieldTypeDisplayName" />
 						<span class="col-md-3 hideOverflow" data-bind="text: localname"/>
 						<span class="col-md-2" data-bind="text: timestamp()"/>
                         <span class="col-md-1" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
-
 					</a>
 					<!-- /ko -->
 				</div>
@@ -203,7 +191,6 @@
 						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
 							<input class="select-all" type="checkbox" data-bind="checked: selectAllVbaComponents, popover: 'Select all'" >
 						</span>
-
 				  		<span class="col-md-4 list-header" data-bind="text: 'Name'"/>
 				  		<span class="col-md-5 list-header" data-bind="text: 'Type'"/>
                         <span class="col-md-1 list-header" >&nbsp;</span>
@@ -213,12 +200,9 @@
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="checked: selected, stopBubble: true" >
 						</span>
-
 						<span class="col-md-4" data-bind="text: name"/>
 						<span class="col-md-5" data-bind="text: type"/>
-
                         <span class="col-md-1" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
-
 					</a>
 					<!-- /ko -->
 				</div>
@@ -242,7 +226,6 @@
 						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
 							<input class="select-all" type="checkbox" data-bind="checked: selectAllSql, popover: 'Select all'" >
 						</span>
-
 				  		<span class="col-md-5 list-header" data-bind="text: 'Name'"/>
                         <span class="col-md-1 list-header" >&nbsp;</span>
 				  		<!--span class="col-md-5 list-header" data-bind="text: 'Type'"/-->
@@ -251,13 +234,10 @@
 					<a class="list-group-item">
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="checked: selected, stopBubble: true" >
-
 						</span>
-
 						<span class="col-md-5" data-bind="text: name"/>
                         <span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
 						<!--span class="col-md-5" data-bind="text: type"/-->
-
 					</a>
 					<!-- /ko -->
 				</div>
@@ -281,24 +261,18 @@
 						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
 							<input class="select-all" type="checkbox" data-bind="checked: selectAllLocalizations, popover: 'Select all'" >
 						</span>
-
 				  		<span class="col-md-4 list-header" data-bind="text: 'Owner'"/>
 				  		<span class="col-md-4 list-header" data-bind="text: 'Code'" />
                         <span class="col-md-1 list-header">&nbsp;</span>
-                        
-
 				  	</div>
 					<!-- ko foreach: filteredLocalizations() -->
 					<a class="list-group-item" data-bind="click: select, css:{'active' : selected}">
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="checked: checked, stopBubble: true" >
 						</span>
-
 						<span class="col-md-4" data-bind="text: owner"/>
-
 						<span class="col-md-4" data-bind="text: code"/>
 						<span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
-
 					</a>
 					<!-- /ko -->
 				</div>
@@ -337,6 +311,41 @@
 		<!-- /ko -->
 	</div>
 
+	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() === 'lbsapps'">
+		<h4>Lime Bootstrap Apps</h4>
+		<!-- ko if: activeTab() === 'lbsapps' -->
+		<div class="row">
+			<div class="col-md-5 col-margined">
+				<div class="input-group">
+			      	<div class="input-group-addon">
+			      		<span class="fa fa-search"/>
+			      	</div>
+					<input type="text" class="form-control" id="searchLBSAppsInput" placeholder="Quick filter..." data-bind="value: lbsAppsFilter, valueUpdate: 'afterkeydown'">
+			    </div>
+				<div class="list-group col-md-12">
+					<div class="list-group-item disabled">
+						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
+							<input class="select-all" type="checkbox" data-bind="checked: selectAllLBSApps, popover: 'Select all'" >
+						</span>
+				  		<span class="col-md-5 list-header" data-bind="text: 'Name'"/>
+                        <span class="col-md-1 list-header" >&nbsp;</span>
+				  	</div>
+					<!-- ko foreach: filteredLBSApps() -->
+					<a class="list-group-item">
+						<span class="col-md-1 col-sm-1 col-md-1" >
+							<input type="checkbox" data-bind="checked: checked, stopBubble: true" >
+						</span>
+						<span class="col-md-5" data-bind="text: name"/>
+                        <span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
+						<!--span class="col-md-5" data-bind="text: type"/-->
+					</a>
+					<!-- /ko -->
+				</div>
+			</div>
+		</div>
+		<!-- /ko -->
+	</div>
+
 	<div class="row col-md-10 col-md-offset-1" data-bind="visible: activeTab() === 'actionpads'">
 		<h4>Actionpads</h4>
 		<!-- ko if: activeTab() === 'actionpads' -->
@@ -353,7 +362,6 @@
 						<span class="col-md-1 col-sm-1 col-md-1 col-sm-1 list-header overflowed">
 							<input class="select-all" type="checkbox" data-bind="checked: selectAllActionpads, popover: 'Select all'" >
 						</span>
-
 				  		<span class="col-md-5 list-header" data-bind="text: 'Table Name'"/>
                         <span class="col-md-1 list-header" >&nbsp;</span>
 				  		<!--span class="col-md-5 list-header" data-bind="text: 'Type'"/-->
@@ -362,13 +370,10 @@
 					<a class="list-group-item">
 						<span class="col-md-1 col-sm-1 col-md-1" >
 							<input type="checkbox" data-bind="checked: checked, stopBubble: true" >
-
 						</span>
-
 						<span class="col-md-5" data-bind="text: tableName"/>
                         <span class="col-md-1 col-offset-2" data-bind="icon:'fa-asterisk', tooltip:{text: 'Is included in loaded package'}, visible:inExistingPackage"> </span>
 						<!--span class="col-md-5" data-bind="text: type"/-->
-
 					</a>
 					<!-- /ko -->
 				</div>

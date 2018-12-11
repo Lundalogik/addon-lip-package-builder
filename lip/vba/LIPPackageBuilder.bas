@@ -2,7 +2,7 @@ Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
 ' Used for showing in the GUI and also setting in the generated packages.json files.
-Private Const m_sLIPPackageBuilderVersion As String = "1.2.0"
+Private Const m_sLIPPackageBuilderVersion As String = "1.2.1"
 
 ' Used for storing an uploaded existing CHANGELOG.md file until createPackage is called.
 Private m_uploaded_changelog_md As String
@@ -26,7 +26,7 @@ Public Sub OpenPackageBuilder()
 
     Exit Sub
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.OpenPackageBuilder")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenPackageBuilder")
 End Sub
 
 
@@ -51,13 +51,13 @@ Public Function LoadDataStructure(strProcedureName As String) As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.LoadDatastructure")
+    Call LC_UI.ShowError("LIPPackageBuilder.LoadDatastructure")
 End Function
 
 
 ' ##SUMMARY Called from javascript.
 ' Returns a JSON string with an array of objects with two parameters:
-' the file name and the table name of all the available Actionpad HTML files in the current solution.
+' the file name and the table name of all the available Actionpad HTML files in the current application.
 Public Function GetAvailableActionpads() As String
     On Error GoTo ErrorHandler
     
@@ -92,7 +92,47 @@ Public Function GetAvailableActionpads() As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetAvailableActionpads")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetAvailableActionpads")
+End Function
+
+
+' ##SUMMARY Called from javascript.
+' Returns a JSON string with an array of objects with one parameter:
+' the folder name of all the folders in the Actionpads\apps folder in the current application.
+Public Function GetAvailableLBSApps() As String
+    On Error GoTo ErrorHandler
+    
+    ' Build array of objects
+    Dim sLBSAppsJson As String
+    sLBSAppsJson = "["
+    
+    ' Loop over folders and add to json
+    Dim oFSO As Object
+    Set oFSO = CreateObject("Scripting.FileSystemObject")
+    Dim oFolder As Variant
+    Set oFolder = oFSO.GetFolder(Application.WebFolder & "apps")
+    Dim oSubFolder As Variant
+    
+    Dim lngCount As Long
+    lngCount = 0
+    For Each oSubFolder In oFolder.SubFolders
+        lngCount = lngCount + 1
+        ' Add comma if there already is an element in the array
+        If lngCount > 1 Then
+            sLBSAppsJson = sLBSAppsJson + ","
+        End If
+        ' Add LBS app as object in the array
+        sLBSAppsJson = sLBSAppsJson & "{""name"": """ & oSubFolder.Name & """}"
+    Next
+    
+    ' Close array
+    sLBSAppsJson = sLBSAppsJson & "]"
+    
+    GetAvailableLBSApps = sLBSAppsJson
+    
+    Exit Function
+ErrorHandler:
+    Call LC_UI.ShowError("LIPPackageBuilder.GetAvailableLBSApps")
 End Function
 
 
@@ -119,7 +159,7 @@ Public Function GetVBAComponents() As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetVBAComponents")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetVBAComponents")
 End Function
 
 
@@ -143,7 +183,7 @@ Private Function GetModuleTypeName(ModuleType As Long) As String
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetModuleTypeName")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetModuleTypeName")
 End Function
 
 
@@ -290,6 +330,15 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
         bResult = True
     End If
     
+    ' Export LBS Apps
+    If bResult And oPackage("install").Exists("apps") Then
+        bResult = ExportLBSApps(oPackage, sTemporaryPackageFolderPath)
+    End If
+    If Not bResult Then
+        Call Application.MessageBox("Could not export LBS apps.", VBA.vbCritical + VBA.vbOKOnly)
+        Exit Sub
+    End If
+    
     ' Export Actionpads
     If bResult And oPackage("install").Exists("actionpads") Then
         bResult = ExportActionpads(oPackage, sTemporaryPackageFolderPath)
@@ -397,7 +446,7 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     
     Exit Sub
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.CreatePackage")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreatePackage")
 End Sub
 
 
@@ -729,7 +778,7 @@ Private Function SaveTableIcons(oPackage As Object, strTempFolder As String) As 
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.SaveTableIcons")
+    Call LC_UI.ShowError("LIPPackageBuilder.SaveTableIcons")
 End Function
 
 
@@ -762,7 +811,7 @@ Private Function ExportSql(oPackage As Object, strTempFolder As String) As Boole
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.ExportSql")
+    Call LC_UI.ShowError("LIPPackageBuilder.ExportSql")
 End Function
 
 
@@ -898,7 +947,7 @@ End Function
 '    Exit Function
 'ErrorHandler:
 '    CheckUniqueFilename = ""
-'    Call UI.ShowError("LIPPackageBuilder.CheckUniqueFilename")
+'    Call LC_UI.ShowError("LIPPackageBuilder.CheckUniqueFilename")
 'End Function
 
 
@@ -929,7 +978,7 @@ Private Function GetCleanTimestamp() As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetCleanTimestamp")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetCleanTimestamp")
 End Function
 
 
@@ -1059,6 +1108,28 @@ ErrorHandler:
 End Function
 
 
+' ##SUMMARY Exports all LBS Apps included in the Package JSON.
+Private Function ExportLBSApps(ByRef oPackage As Object, sTempFolder As String) As Boolean
+    On Error GoTo ErrorHandler
+    
+    If Not oPackage.Item("install") Is Nothing Then
+        If Not oPackage.Item("install").Item("apps") Is Nothing Then
+            Dim oLBSApp As Object
+            Dim sLBSAppsFolderPath As String
+            sLBSAppsFolderPath = CreateFolder(sTempFolder, "apps")
+            For Each oLBSApp In oPackage.Item("install").Item("apps")
+                Call CopyFolder(LCO.MakeFileName(Application.WebFolder, "apps\" & oLBSApp.Item("name")), LCO.MakeFileName(sLBSAppsFolderPath, oLBSApp.Item("name")))
+            Next
+        End If
+    End If
+    ExportLBSApps = True
+    
+    Exit Function
+ErrorHandler:
+    ExportLBSApps = False
+End Function
+
+
 ' ##SUMMARY Exports all VBA modules marked in the Package JSON.
 Private Function ExportVBA(oPackage As Object, strTempFolder As String) As Boolean
     On Error GoTo ErrorHandler
@@ -1162,7 +1233,7 @@ Private Function CreateFolder(sParentFolderPath As String, sSubFolderName As Str
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.CreateFolder")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreateFolder")
 End Function
 
 
@@ -1188,7 +1259,7 @@ Public Function GetLocalizations(ByVal sOwner As String) As Records
     Set GetLocalizations = oRecords
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetLocalizations")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetLocalizations")
 End Function
 
 
@@ -1204,6 +1275,8 @@ Public Function OpenExistingPackage() As String
     If sFilePath = "" Then
         Exit Function
     End If
+    
+    Application.MousePointer = 11
     
     If LCO.ExtractFileExtension(sFilePath) = "zip" Then
         Dim strTempFolderPath As String
@@ -1221,6 +1294,7 @@ Public Function OpenExistingPackage() As String
         If LCO.FileExists(strTempFolderPath & "\" & "lip.json") Then
             strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "lip.json")
         Else
+            Application.MousePointer = 0
             Call Application.MessageBox("Could not find lip.json in the extracted folder")
             Exit Function
         End If
@@ -1231,11 +1305,15 @@ Public Function OpenExistingPackage() As String
         OpenExistingPackage = b64Json
     End If
     
+    Application.MousePointer = 0
+    
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
+    Application.MousePointer = 0
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingPackage")
     Exit Function
 UnzipError:
+    Application.MousePointer = 0
     Call Application.MessageBox("There was an error unzipping the zipped package file")
 End Function
 
@@ -1319,7 +1397,7 @@ Public Function OpenExistingChangelog() As String
     Exit Function
 ErrorHandler:
     OpenExistingChangelog = "{}"
-    Call UI.ShowError("LIPPackageBuilder.OpenExistingChangelog")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingChangelog")
 End Function
 
 
@@ -1350,7 +1428,7 @@ Public Function OpenExistingMetadata() As String
     Exit Function
 ErrorHandler:
     OpenExistingMetadata = "{}"
-    Call UI.ShowError("LIPPackageBuilder.OpenExistingMetadata")
+    Call LC_UI.ShowError("LIPPackageBuilder.OpenExistingMetadata")
 End Function
 
 
@@ -1399,7 +1477,7 @@ On Error GoTo ErrorHandler
     ReadAllTextFromFile = strText
 Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.ReadAllTextFromFile")
+    Call LC_UI.ShowError("LIPPackageBuilder.ReadAllTextFromFile")
 End Function
 
 
@@ -1440,7 +1518,7 @@ Private Function Base64StringToJsonObject(sInput As String) As Object
     
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.Base64StringToJsonObject")
+    Call LC_UI.ShowError("LIPPackageBuilder.Base64StringToJsonObject")
 End Function
 
 
@@ -1458,7 +1536,7 @@ Private Function CopyFolder(sSourcePath As String, sTargetPath As String) As Boo
     Exit Function
 ErrorHandler:
     CopyFolder = False
-    Call UI.ShowError("LIPPackageBuilder.CopyFolder")
+    Call LC_UI.ShowError("LIPPackageBuilder.CopyFolder")
 End Function
 
 
@@ -1483,7 +1561,7 @@ Private Function CreateReadmeMd(ByRef oReadmeInfo As Object, sPath As String) As
     Exit Function
 ErrorHandler:
     CreateReadmeMd = False
-    Call UI.ShowError("LIPPackageBuilder.CreateReadmeMd")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreateReadmeMd")
 End Function
 
 
@@ -1528,7 +1606,7 @@ Private Function CreateChangelogMd(ByRef oChangelogInfo As Object, sPath As Stri
     Exit Function
 ErrorHandler:
     CreateChangelogMd = False
-    Call UI.ShowError("LIPPackageBuilder.CreateChangelogMd")
+    Call LC_UI.ShowError("LIPPackageBuilder.CreateChangelogMd")
 End Function
 
 
@@ -1540,7 +1618,7 @@ Public Function GetVersion() As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.GetVersion")
+    Call LC_UI.ShowError("LIPPackageBuilder.GetVersion")
 End Function
 
 
@@ -1564,7 +1642,7 @@ Private Function SelectFile(sCaption As String, sFilter As String) As String
 
     Exit Function
 ErrorHandler:
-    Call UI.ShowError("LIPPackageBuilder.SelectFile")
+    Call LC_UI.ShowError("LIPPackageBuilder.SelectFile")
 End Function
 
 
