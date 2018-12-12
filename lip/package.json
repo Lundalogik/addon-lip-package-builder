@@ -1,6 +1,6 @@
 {
 	"uniqueName": "lippackagebuilder",
-	"createdWithLIPPackageBuilderVersion": "2.0.0",
+	"createdWithLIPPackageBuilderVersion": "2.1.0",
 	"addonVersion": "2.0.0",
 	"install": {		
 		"vba": [{
