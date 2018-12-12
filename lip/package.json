@@ -1,7 +1,7 @@
 {
 	"uniqueName": "lippackagebuilder",
-	"createdWithLIPPackageBuilderVersion": "1.2.1",
-	"addonVersion": "1.2.1",
+	"createdWithLIPPackageBuilderVersion": "2.0.0",
+	"addonVersion": "2.0.0",
 	"install": {		
 		"vba": [{
 			"name": "cStringBuilder",
