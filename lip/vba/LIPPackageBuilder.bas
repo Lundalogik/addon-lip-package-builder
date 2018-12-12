@@ -2,7 +2,7 @@ Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
 ' Used for showing in the GUI and also setting in the generated lip.json files.
-Private Const m_sLIPPackageBuilderVersion As String = "1.3.0"
+Private Const m_sLIPPackageBuilderVersion As String = "2.0.0"
 
 ' Used for storing an uploaded existing CHANGELOG.md file until createPackage is called.
 Private m_uploaded_changelog_md As String
