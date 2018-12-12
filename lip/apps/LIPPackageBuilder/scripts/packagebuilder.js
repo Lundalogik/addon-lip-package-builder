@@ -229,7 +229,7 @@ packagebuilder = {
             });
             
             // Build package json from database structure
-            var package_json = {
+            var lip_json = {
                 "install" : {
                 },
                 "createdWithLIPPackageBuilderVersion" : vm.lipPackageBuilderVersion(),
@@ -240,39 +240,38 @@ packagebuilder = {
             var bSomethingToInstall = false;
 
             if(packageTables.length > 0){
-                package_json.install.tables = packageTables;
+                lip_json.install.tables = packageTables;
                 bSomethingToInstall = true;
             }
             if(packageRelations.length > 0){
-                package_json.install.relations = packageRelations;
+                lip_json.install.relations = packageRelations;
                 bSomethingToInstall = true;
             }
 
             if(sqlObjects.length > 0){
-                package_json.install.sql = sqlObjects
+                lip_json.install.sql = sqlObjects
                 bSomethingToInstall = true;
             }
             
             if(arrLocalizations.length > 0){
-                package_json.install.localize = arrLocalizations;
+                lip_json.install.localize = arrLocalizations;
                 bSomethingToInstall = true;
             }
 
             if(arrLBSApps.length > 0){
-                package_json.install.apps = arrLBSApps;
+                lip_json.install.apps = arrLBSApps;
                 bSomethingToInstall = true;
             }
 
             if(arrActionpads.length > 0){
-                package_json.install.actionpads = arrActionpads;
+                lip_json.install.actionpads = arrActionpads;
                 bSomethingToInstall = true;
             }
 
             if(arrComponents.length > 0){
-                package_json.install.vba = arrComponents;
+                lip_json.install.vba = arrComponents;
                 bSomethingToInstall = true;
             }
-            //lbs.log.debug(JSON.stringify(package_json));
         }
         catch(e) {
             alert("Error serializing LIP Package:\n\n" + e);
@@ -309,7 +308,7 @@ packagebuilder = {
                 
                 //Base64 encode the entire strings, commas don't do well in VBA calls.
                 lbs.common.executeVba('LIPPackageBuilder.CreatePackage,'
-                                        + window.btoa(JSON.stringify(package_json))
+                                        + window.btoa(JSON.stringify(lip_json))
                                         + ',' + window.btoa(JSON.stringify(metadata_json))
                                         + ',' + window.btoa(JSON.stringify(readme_md))
                                         + ',' + window.btoa(JSON.stringify(changelog_md))

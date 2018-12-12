@@ -1,8 +1,8 @@
 Attribute VB_Name = "LIPPackageBuilder"
 Option Explicit
 
-' Used for showing in the GUI and also setting in the generated packages.json files.
-Private Const m_sLIPPackageBuilderVersion As String = "1.2.1"
+' Used for showing in the GUI and also setting in the generated lip.json files.
+Private Const m_sLIPPackageBuilderVersion As String = "1.3.0"
 
 ' Used for storing an uploaded existing CHANGELOG.md file until createPackage is called.
 Private m_uploaded_changelog_md As String
@@ -359,12 +359,12 @@ Public Sub CreatePackage(sPackage As String, sMetaData As String, sReadmeInfo As
     'End If
 
     
-    ' Save Package.json
+    ' Save lip.json
     If bResult Then
         bResult = SavePackageFile(oPackage, sTemporaryPackageFolderPath)
     End If
     If Not bResult Then
-        Call Application.MessageBox("An error occurred: Could not save the package.json file.", VBA.vbCritical + VBA.vbOKOnly)
+        Call Application.MessageBox("An error occurred: Could not save the lip.json file.", VBA.vbCritical + VBA.vbOKOnly)
         Exit Sub
     End If
     
@@ -1038,7 +1038,7 @@ Private Function DeleteTemporaryFolder(strTempFolder As String) As Boolean
         strTempFolder = Left(strTempFolder, Len(strTempFolder) - 1)
     End If
 
-    If fso.FolderExists(strTempFolder) = False Then
+    If fso.folderExists(strTempFolder) = False Then
         DeleteTemporaryFolder = True
         Exit Function
     End If
@@ -1066,7 +1066,7 @@ Private Function SavePackageFile(oPackage As Object, strTempPath As String) As B
     Dim bResult As Boolean
     Dim fso As New FileSystemObject
     Dim filePath As String
-    filePath = strTempPath & "\package.json"
+    filePath = strTempPath & "\lip.json"
     bResult = True
     'Set FSO = CreateObject("Scripting.FileSystemObject")
     
@@ -1282,22 +1282,20 @@ Public Function OpenExistingPackage() As String
         Dim strTempFolderPath As String
         strTempFolderPath = Application.TemporaryFolder & "\" & VBA.Replace(VBA.Replace(LCO.GenerateGUID, "{", ""), "}", "")
         Dim fso As New Scripting.FileSystemObject
-        If Not fso.FolderExists(strTempFolderPath) Then
+        If Not fso.folderExists(strTempFolderPath) Then
             Call fso.CreateFolder(strTempFolderPath)
         End If
         
         On Error GoTo UnzipError
-        Call UnZip(strTempFolderPath, sFilePath)
+        Call Unzip(strTempFolderPath, sFilePath)
 
         On Error GoTo ErrorHandler
         Dim strJson As String
-        If LCO.FileExists(strTempFolderPath & "\" & "app.json") Then
-            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "app.json")
-        ElseIf LCO.FileExists(strTempFolderPath & "\" & "package.json") Then
-            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "package.json")
+        If LCO.FileExists(strTempFolderPath & "\" & "lip.json") Then
+            strJson = ReadAllTextFromFile(strTempFolderPath & "\" & "lip.json")
         Else
             Application.MousePointer = 0
-            Call Application.MessageBox("Could not find an app.json or a package.json in the extracted folder")
+            Call Application.MessageBox("Could not find lip.json in the extracted folder")
             Exit Function
         End If
 
@@ -1434,7 +1432,7 @@ ErrorHandler:
 End Function
 
 
-Private Sub UnZip(strTargetPath As String, Fname As Variant)
+Private Sub Unzip(strTargetPath As String, Fname As Variant)
     Dim oApp As Object, FSOobj As Object
     Dim FileNameFolder As Variant
 
@@ -1446,7 +1444,7 @@ Private Sub UnZip(strTargetPath As String, Fname As Variant)
     
     'create destination folder if it does not exist
     Set FSOobj = CreateObject("Scripting.FilesystemObject")
-    If FSOobj.FolderExists(FileNameFolder) = False Then
+    If FSOobj.folderExists(FileNameFolder) = False Then
         FSOobj.CreateFolder FileNameFolder
     End If
     
