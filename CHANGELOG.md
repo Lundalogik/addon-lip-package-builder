@@ -1,7 +1,7 @@
 # Changelog for LIP Package Builder
 
-## v1.3.0
-**Released:** *Not yet released*
+## v2.0.0
+**Released:** 2018-12-12
 
 **Authors:** Fredrik Eriksson
 
