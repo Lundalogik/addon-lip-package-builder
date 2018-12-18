@@ -1,0 +1,37 @@
+{
+    "install": {
+        "sql": [
+            {
+                "name": "csp_lip_getxmldatabase_wrapper",
+                "relPath": "sql\\csp_lip_getxmldatabase_wrapper.sql"
+            },
+            {
+                "name": "csp_lip_getlocalnames",
+                "relPath": "sql\\csp_lip_getlocalnames.sql"
+            }
+        ],
+        "apps": [
+            {
+                "name": "LIPPackageBuilder",
+                "relPath": "apps\\LIPPackageBuilder"
+            }
+        ],
+        "vba": [
+            {
+                "name": "cStringBuilder",
+                "relPath": "vba\\cStringBuilder.cls"
+            },
+            {
+                "name": "JsonConverter",
+                "relPath": "vba\\JsonConverter.bas"
+            },
+            {
+                "name": "LIPPackageBuilder",
+                "relPath": "vba\\LIPPackageBuilder.bas"
+            }
+        ]
+    },
+    "createdWithLIPPackageBuilderVersion": "2.0.0",
+    "uniqueName": "lippackagebuilder",
+    "addonVersion": "2.0.0"
+}
