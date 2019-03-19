@@ -1,8 +1,0 @@
-{
-	"uniqueName": "lippackagebuilder",
-	"displayName": "LIP Package Builder",
-	"description": "LIP Package builder is a tool created to make building LIP packages easier.",
-	"cloudCompatible": false,
-	"tags": [		
-	]
-}
